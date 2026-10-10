@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Applications | Smart Placement Portal</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #080b16;
+            color: #f1f5f9;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: rgba(13, 18, 35, 0.95);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            padding: 25px 15px;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            padding: 0 12px 30px;
+        }
+
+        .logo span {
+            color: #7c3aed;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            padding: 13px 15px;
+            margin: 5px 0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: linear-gradient(90deg, #6d28d9, #4f46e5);
+            color: white;
+        }
+
+        .nav-link i {
+            font-size: 18px;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            left: 15px;
+            right: 15px;
+            color: #f87171;
+        }
+
+        .logout:hover {
+            background: rgba(239,68,68,0.15);
+            color: #f87171;
+        }
+
+        /* MAIN */
+        .main {
+            margin-left: 250px;
+            padding: 35px;
+        }
+
+        .page-title {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 30px;
+        }
+
+        /* STATS */
+        .stat-card {
+            background: rgba(20, 27, 49, 0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 22px;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(124,58,237,0.5);
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: rgba(124,58,237,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #a78bfa;
+            font-size: 21px;
+            margin-bottom: 15px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* TABLE */
+        .table-card {
+            margin-top: 30px;
+            background: rgba(20, 27, 49, 0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .table-header {
+            padding: 22px 25px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            font-size: 19px;
+            font-weight: 600;
+        }
+
+        .table {
+            margin: 0;
+            color: #e2e8f0;
+        }
+
+        .table thead th {
+            background: rgba(15, 23, 42, 0.8);
+            color: #94a3b8;
+            border: none;
+            padding: 16px;
+            font-size: 13px;
+        }
+
+        .table tbody td {
+            border-color: rgba(255,255,255,0.06);
+            padding: 18px 16px;
+            vertical-align: middle;
+        }
+
+        .company {
+            font-weight: 600;
+        }
+
+        .role {
+            color: #cbd5e1;
+        }
+
+        .package {
+            color: #a78bfa;
+            font-weight: 600;
+        }
+
+        .status {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-applied {
+            background: rgba(59,130,246,0.15);
+            color: #60a5fa;
+        }
+
+        .status-shortlisted {
+            background: rgba(234,179,8,0.15);
+            color: #facc15;
+        }
+
+        .status-selected {
+            background: rgba(34,197,94,0.15);
+            color: #4ade80;
+        }
+
+        .status-rejected {
+            background: rgba(239,68,68,0.15);
+            color: #f87171;
+        }
+
+        /* EMPTY STATE */
+        .empty {
+            text-align: center;
+            padding: 70px 20px;
+            color: #94a3b8;
+        }
+
+        .empty i {
+            font-size: 55px;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+
+        .empty h4 {
+            color: #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        .browse-btn {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 11px 20px;
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            color: white;
+            border-radius: 10px;
+            text-decoration: none;
+        }
+
+        /* TIMELINE */
+        .timeline {
+            margin-top: 30px;
+            padding: 25px;
+            background: rgba(20, 27, 49, 0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+        }
+
+        .timeline h5 {
+            margin-bottom: 25px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .timeline-icon {
+            width: 35px;
+            height: 35px;
+            min-width: 35px;
+            border-radius: 50%;
+            background: rgba(124,58,237,0.2);
+            color: #a78bfa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timeline-text strong {
+            display: block;
+        }
+
+        .timeline-text small {
+            color: #64748b;
+        }
+
+        /* MOBILE */
+        @media(max-width: 900px) {
+            .sidebar {
+                width: 210px;
+            }
+
+            .main {
+                margin-left: 210px;
+                padding: 25px;
+            }
+        }
+
+        @media(max-width: 700px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .logout {
+                position: static;
+                margin-top: 10px;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .table-card {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 750px;
+            }
+        }
+    </style>
+<script src="../js/company-config.js"></script>
+    <script src="../js/api.js"></script>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <div class="logo">
+        Smart<span>Placement</span>
+    </div>
+
+    <a href="dashboard.html" class="nav-link">
+        <i class="bi bi-grid-1x2-fill"></i>
+        Dashboard
+    </a>
+
+    <a href="profile.html" class="nav-link">
+        <i class="bi bi-person-fill"></i>
+        My Profile
+    </a>
+
+    <a href="drives.html" class="nav-link">
+        <i class="bi bi-briefcase-fill"></i>
+        Placement Drives
+    </a>
+
+    <a href="applications.html" class="nav-link active">
+        <i class="bi bi-file-earmark-text-fill"></i>
+        My Applications
+    </a>
+
+    <a href="history.html" class="nav-link">
+        <i class="bi bi-clock-history"></i>
+        Placement History
+    </a>
+
+    <a href="../index.html" class="nav-link">
+        <i class="bi bi-house-fill"></i>
+        Home
+    </a>
+
+    <a href="#" class="nav-link logout" onclick="logout()">
+        <i class="bi bi-box-arrow-left"></i>
+        Logout
+    </a>
+
+</div>
+
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+    <h1 class="page-title">My Applications</h1>
+    <p class="subtitle">
+        Track all your placement applications and their current status.
+    </p>
+
+
+    <!-- STATS -->
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-send-fill"></i>
+                </div>
+                <div class="stat-number" id="totalApplications">0</div>
+                <div class="stat-label">Total Applications</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+                <div class="stat-number" id="appliedCount">0</div>
+                <div class="stat-label">Applications Pending</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                <div class="stat-number" id="shortlistedCount">0</div>
+                <div class="stat-label">Shortlisted</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="stat-number" id="selectedCount">0</div>
+                <div class="stat-label">Selected</div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- APPLICATION TABLE -->
+    <div class="table-card">
+
+        <div class="table-header">
+            <i class="bi bi-file-earmark-text me-2"></i>
+            Application Details
+        </div>
+
+        <div id="applicationContainer"></div>
+
+    </div>
+
+
+    <!-- TIMELINE -->
+    <div class="timeline">
+
+        <h5>
+            <i class="bi bi-activity me-2"></i>
+            Application Process
+        </h5>
+
+        <div class="timeline-item">
+            <div class="timeline-icon">
+                <i class="bi bi-send"></i>
+            </div>
+
+            <div class="timeline-text">
+                <strong>Application Submitted</strong>
+                <small>Your application is sent to the company.</small>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-icon">
+                <i class="bi bi-search"></i>
+            </div>
+
+            <div class="timeline-text">
+                <strong>Application Under Review</strong>
+                <small>The company reviews your profile.</small>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-icon">
+                <i class="bi bi-star"></i>
+            </div>
+
+            <div class="timeline-text">
+                <strong>Shortlisted</strong>
+                <small>You are selected for the next recruitment round.</small>
+            </div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-icon">
+                <i class="bi bi-trophy"></i>
+            </div>
+
+            <div class="timeline-text">
+                <strong>Final Selection</strong>
+                <small>Congratulations! You receive the placement offer.</small>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+async function loadApplications() {
+    const session = getSession();
+    let applications = [];
+    try {
+        if (session && session.userType === 'student') {
+            applications = await apiRequest('/applications/student/' + session.id);
+            localStorage.setItem('applications', JSON.stringify(applications));
+        } else {
+            applications = JSON.parse(localStorage.getItem('applications') || '[]');
+        }
+    } catch (e) { applications = JSON.parse(localStorage.getItem('applications') || '[]'); }
+
+    const container = document.getElementById('applicationContainer');
+    document.getElementById('totalApplications').textContent = applications.length;
+    document.getElementById('appliedCount').textContent = applications.filter(a => a.status === 'Applied').length;
+    document.getElementById('shortlistedCount').textContent = applications.filter(a => a.status === 'Shortlisted' || a.status === 'Interview').length;
+    document.getElementById('selectedCount').textContent = applications.filter(a => a.status === 'Selected').length;
+
+    if (!applications.length) {
+        container.innerHTML = `<div class="empty"><i class="bi bi-folder-x"></i><h4>No Applications Yet</h4><p>You haven't applied to any placement drive yet.</p><a href="drives.html" class="browse-btn"><i class="bi bi-search me-2"></i>Browse Placement Drives</a></div>`;
+        return;
+    }
+    let html = `<div class="table-responsive"><table class="table"><thead><tr><th>Company</th><th>Job Role</th><th>Package</th><th>Applied Date</th><th>Status</th></tr></thead><tbody>`;
+    applications.forEach(app => {
+        let statusClass = 'status-applied';
+        if (app.status === 'Shortlisted' || app.status === 'Interview') statusClass = 'status-shortlisted';
+        if (app.status === 'Selected') statusClass = 'status-selected';
+        if (app.status === 'Rejected') statusClass = 'status-rejected';
+        html += `<tr><td class="company"><i class="bi bi-building me-2"></i>${app.company}</td><td class="role">${app.role}</td><td class="package">${app.package}</td><td>${app.date}</td><td><span class="status ${statusClass}">${app.status}</span></td></tr>`;
+    });
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+function logout() { clearSession(); window.location.href = '../student-login.html'; }
+loadApplications();
+</script>
+
+</body>
+</html>

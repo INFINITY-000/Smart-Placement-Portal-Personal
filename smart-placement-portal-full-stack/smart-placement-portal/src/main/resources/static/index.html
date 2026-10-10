@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Placement Portal — Connecting Students With Opportunities</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    :root {
+      --primary-dark: #0a0a1a;
+      --primary: #1a1a2e;
+      --secondary: #16213e;
+      --accent: #0f3460;
+      --blue: #4361ee;
+      --purple: #7209b7;
+      --pink: #f72585;
+      --cyan: #4cc9f0;
+      --green: #06d6a0;
+      --yellow: #ffd166;
+      --text-light: #e0e0e0;
+      --text-muted: #8892b0;
+      --card-bg: rgba(255,255,255,0.05);
+      --card-border: rgba(255,255,255,0.1);
+      --gradient-blue: linear-gradient(135deg, #4361ee, #7209b7);
+      --gradient-cyan: linear-gradient(135deg, #4cc9f0, #4361ee);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body.intro-lock { overflow:hidden; }
+
+    body {
+      background-color: var(--primary-dark);
+      color: var(--text-light);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ---- SCROLLBAR ---- */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--primary); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+    /* ---- ANIMATIONS ---- */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes float { 0%,100% { transform: translateY(0px); } 50% { transform: translateY(-18px); } }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes gradientMove { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+    @keyframes countUp { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes particleFloat {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100px) rotate(720deg); opacity: 0; }
+    }
+    @keyframes introReveal { from { opacity: 0; transform: translateY(24px) scale(.96); filter: blur(8px); } to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); } }
+    @keyframes introExit { to { opacity: 0; visibility: hidden; transform: scale(1.04); filter: blur(10px); } }
+    @keyframes shimmer { 0% { transform: translateX(-120%) skewX(-18deg); } 100% { transform: translateX(220%) skewX(-18deg); } }
+    @keyframes ringPulse { 0%,100% { transform: scale(.92); opacity:.35; } 50% { transform: scale(1.08); opacity:.8; } }
+    @keyframes floatSlow { 0%,100% { transform: translate3d(0,0,0) rotate(0deg); } 50% { transform: translate3d(0,-12px,0) rotate(2deg); } }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes gridDrift { 0% { background-position: 0 0, 0 0; } 100% { background-position: 80px 80px, -80px -80px; } }
+    @keyframes glowBreath { 0%,100% { opacity:.35; transform:scale(1); } 50% { opacity:.65; transform:scale(1.08); } }
+    @keyframes borderFlow { 0% { background-position:0% 50%; } 100% { background-position:200% 50%; } }
+
+    /* ---- SCROLL CINEMATIC BACKDROP ---- */
+    .tech-backdrop {
+      position:fixed; inset:-8vh -4vw; z-index:-5; pointer-events:none;
+      background:
+        linear-gradient(180deg, rgba(3,7,20,.42), rgba(5,8,23,.80)),
+        url('tech-network.svg') center/cover no-repeat;
+      opacity:.72;
+      transform:translate3d(0, calc(var(--scroll-y, 0) * -0.055px), 0) scale(1.08);
+      filter:saturate(1.08) contrast(1.04);
+      transition:opacity .35s ease, filter .5s ease;
+      will-change:transform;
+    }
+    .tech-backdrop::before {
+      content:''; position:absolute; inset:0;
+      background:linear-gradient(120deg, rgba(12,35,82,.30), rgba(58,20,110,.20), rgba(0,173,255,.08));
+      mix-blend-mode:screen;
+    }
+    .tech-backdrop::after {
+      content:''; position:absolute; inset:0;
+      background-image:linear-gradient(rgba(76,201,240,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(76,201,240,.035) 1px, transparent 1px);
+      background-size:80px 80px; opacity:.32; animation:gridDrift 18s linear infinite;
+    }
+    .scroll-progress {
+      position:fixed; top:0; left:0; height:3px; width:0%; z-index:6000;
+      background:linear-gradient(90deg,#4cc9f0,#4361ee,#9b5cff,#f72585,#4cc9f0);
+      background-size:200% 100%; animation:borderFlow 4s linear infinite;
+      box-shadow:0 0 18px rgba(76,201,240,.75);
+    }
+    .cursor-glow {
+      position:fixed; width:280px; height:280px; border-radius:50%; pointer-events:none; z-index:-1;
+      background:radial-gradient(circle, rgba(67,97,238,.13), rgba(76,201,240,.04) 38%, transparent 70%);
+      transform:translate(-50%,-50%); mix-blend-mode:screen; opacity:0; transition:opacity .25s ease;
+    }
+    body.is-scrolling .cursor-glow { opacity:.7; }
+
+    /* Every scroll section gets a living glass layer */
+    section.section-pad, .stats-section {
+      position:relative; isolation:isolate;
+      background:rgba(10,10,26,.62) !important;
+      backdrop-filter:blur(2px);
+    }
+    .stats-section { background:rgba(22,33,62,.58) !important; }
+    section.section-pad::before, .stats-section::before {
+      content:''; position:absolute; inset:0; z-index:-1; pointer-events:none;
+      background:radial-gradient(circle at var(--scene-x,50%) var(--scene-y,50%), rgba(67,97,238,.14), transparent 32%);
+      transition:background .45s ease;
+    }
+
+    .scroll-float {
+      transform:translate3d(0, var(--float-y, 0px), 0) scale(var(--float-scale,1));
+      transition:transform .15s linear; will-change:transform;
+    }
+    .scroll-card {
+      transition:transform .22s ease, box-shadow .35s ease, border-color .35s ease;
+      transform:perspective(1100px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) translateY(var(--lift,0px));
+      will-change:transform;
+    }
+    .scroll-card::after {
+      content:''; position:absolute; inset:-1px; border-radius:inherit; padding:1px;
+      background:linear-gradient(120deg, transparent 20%, rgba(76,201,240,.42), rgba(114,9,183,.45), transparent 80%);
+      background-size:220% 100%; opacity:0; pointer-events:none;
+      -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      -webkit-mask-composite:xor; mask-composite:exclude;
+      transition:opacity .3s ease;
+    }
+    .scroll-card:hover::after { opacity:1; animation:borderFlow 2.2s linear infinite; }
+
+    /* ---- MODERN INTRO / MOTION LAYER ---- */
+    .page-intro {
+      position: fixed; inset: 0; z-index: 5000; display: grid; place-items: center;
+      background: radial-gradient(circle at 50% 45%, rgba(67,97,238,.20), transparent 28%), #050817;
+      overflow: hidden; animation: introExit .75s cubic-bezier(.76,0,.24,1) 1.05s forwards;
+    }
+    .page-intro::before { content:''; position:absolute; width:520px; height:520px; border-radius:50%;
+      background:radial-gradient(circle, rgba(76,201,240,.16), transparent 66%); filter:blur(8px); animation:ringPulse 2.2s ease-in-out infinite; }
+    .intro-core { position:relative; text-align:center; animation:introReveal .75s ease both; }
+    .intro-mark { width:72px; height:72px; margin:0 auto 18px; border-radius:22px; display:grid; place-items:center;
+      background:linear-gradient(135deg,#4361ee,#7209b7); box-shadow:0 0 50px rgba(67,97,238,.5); font-size:30px; }
+    .intro-title { font-weight:900; letter-spacing:-.03em; font-size:clamp(2rem,5vw,3.8rem); }
+    .intro-title span { background:linear-gradient(90deg,#4cc9f0,#4361ee,#b56cff); background-size:200% 100%; animation:gradientMove 3s ease infinite; -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .intro-line { width:170px; height:2px; margin:18px auto 0; background:linear-gradient(90deg,transparent,#4cc9f0,#7209b7,transparent); box-shadow:0 0 20px rgba(76,201,240,.6); }
+
+    .magnetic-btn { position:relative; overflow:hidden; isolation:isolate; }
+    .magnetic-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.28) 50%,transparent 75%); transform:translateX(-120%) skewX(-18deg); z-index:-1; }
+    .magnetic-btn:hover::before { animation:shimmer .7s ease; }
+    .hero-buttons a { transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease; }
+    .hero-buttons a:hover { transform:translateY(-5px) scale(1.025); }
+    .hero-visual { perspective:1200px; }
+    .dashboard-preview { transform-style:preserve-3d; transition:transform .18s ease-out; will-change:transform; box-shadow:0 35px 90px rgba(0,0,0,.48), 0 0 60px rgba(67,97,238,.12); }
+    .hero-visual::after { content:''; position:absolute; width:70%; height:24px; left:15%; bottom:-18px; background:rgba(67,97,238,.28); filter:blur(24px); border-radius:50%; animation:floatSlow 5s ease-in-out infinite; }
+    .preview-company { animation:floatSlow 5s ease-in-out infinite; }
+    .preview-company:nth-child(2n) { animation-delay:-1.2s; }
+    .preview-company:nth-child(3n) { animation-delay:-2.3s; }
+
+    .recruiter-marquee { overflow:hidden; mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent); -webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent); margin-top:38px; }
+    .recruiter-track { width:max-content; display:flex; gap:18px; animation:marquee 26s linear infinite; }
+    .recruiter-pill { min-width:190px; display:flex; align-items:center; gap:12px; padding:12px 16px; border:1px solid rgba(255,255,255,.1); border-radius:16px; background:rgba(255,255,255,.035); backdrop-filter:blur(12px); transition:.3s ease; }
+    .recruiter-pill:hover { border-color:rgba(76,201,240,.45); background:rgba(67,97,238,.10); transform:translateY(-4px); }
+    .recruiter-pill img { width:38px; height:38px; border-radius:10px; background:#fff; padding:6px; object-fit:contain; }
+    .recruiter-pill strong { display:block; font-size:.92rem; }
+    .recruiter-pill small { color:var(--text-muted); }
+
+    .company-chip { position:relative; overflow:hidden; }
+    .company-chip::after { content:''; position:absolute; inset:0; background:linear-gradient(115deg,transparent,rgba(255,255,255,.10),transparent); transform:translateX(-130%); }
+    .company-chip:hover::after { animation:shimmer .8s ease; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration:.001ms !important; animation-iteration-count:1 !important; scroll-behavior:auto !important; transition-duration:.001ms !important; }
+    }
+
+
+    /* ===== SCROLL STORY / CINEMATIC SCENE TRANSITIONS ===== */
+    html { scroll-behavior: smooth; }
+    body { background:#050817; }
+    .scroll-story { position:relative; height:420vh; margin-top:0; }
+    .story-sticky { position:sticky; top:0; height:100vh; overflow:hidden; isolation:isolate; background:#050817; }
+    .story-noise { position:absolute; inset:-50%; opacity:.045; pointer-events:none; z-index:20; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.9'/%3E%3C/svg%3E"); mix-blend-mode:screen; }
+    .story-grid { position:absolute; inset:0; z-index:0; opacity:.35; background-image:linear-gradient(rgba(76,201,240,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(76,201,240,.06) 1px,transparent 1px); background-size:60px 60px; transform:perspective(900px) rotateX(65deg) scale(1.8) translateY(25%); transform-origin:center bottom; mask-image:linear-gradient(to top,black,transparent 75%); }
+    .story-light { position:absolute; width:55vw; height:55vw; border-radius:50%; filter:blur(100px); opacity:.26; z-index:0; transition:all 1s cubic-bezier(.22,.61,.36,1); }
+    .story-light.one { background:#4361ee; left:-20vw; top:-25vw; }
+    .story-light.two { background:#7209b7; right:-20vw; bottom:-25vw; }
+    .story-content { position:relative; z-index:10; width:min(1180px,92vw); height:100%; margin:auto; display:flex; align-items:center; }
+    .story-copy { width:58%; padding-top:2vh; }
+    .story-kicker { display:inline-flex; align-items:center; gap:10px; padding:8px 14px; border:1px solid rgba(255,255,255,.12); border-radius:999px; background:rgba(255,255,255,.045); backdrop-filter:blur(15px); color:#aeb9d4; font-size:.78rem; letter-spacing:.16em; text-transform:uppercase; }
+    .story-kicker i { color:#4cc9f0; }
+    .story-title { margin:22px 0 20px; font-size:clamp(3.2rem,7vw,7.6rem); line-height:.88; letter-spacing:-.065em; font-weight:950; max-width:850px; }
+    .story-title .line { display:block; overflow:hidden; }
+    .story-title .line span { display:block; transform:translateY(110%); opacity:0; transition:transform .85s cubic-bezier(.76,0,.24,1),opacity .65s ease; }
+    .story-scene.active .story-title .line span { transform:translateY(0); opacity:1; }
+    .story-scene.active .story-title .line:nth-child(2) span { transition-delay:.08s; }
+    .story-scene.active .story-title .line:nth-child(3) span { transition-delay:.16s; }
+    .story-gradient { background:linear-gradient(100deg,#fff 5%,#b7dfff 38%,#6b5cff 72%,#b34dff); background-size:200% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:gradientMove 5s ease infinite; }
+    .story-desc { max-width:600px; color:#94a2c1; font-size:clamp(1rem,1.4vw,1.2rem); line-height:1.8; margin-bottom:30px; opacity:0; transform:translateY(20px); transition:all .7s ease .22s; }
+    .story-scene.active .story-desc { opacity:1; transform:translateY(0); }
+    .story-actions { display:flex; gap:12px; flex-wrap:wrap; opacity:0; transform:translateY(20px); transition:all .7s ease .32s; }
+    .story-scene.active .story-actions { opacity:1; transform:translateY(0); }
+    .story-visual { position:absolute; right:-4vw; width:50%; height:72vh; display:grid; place-items:center; perspective:1400px; }
+    .scene-visual { position:absolute; width:min(570px,46vw); height:min(640px,68vh); opacity:0; transform:translate3d(120px,30px,0) scale(.82) rotateY(-18deg); filter:blur(8px); transition:opacity .7s ease,transform 1s cubic-bezier(.22,.61,.36,1),filter .8s ease; }
+    .story-scene.active .scene-visual { opacity:1; transform:translate3d(0,0,0) scale(1) rotateY(0); filter:blur(0); }
+    .scene-card { position:absolute; inset:0; border:1px solid rgba(255,255,255,.13); border-radius:34px; overflow:hidden; background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.025)); box-shadow:0 40px 100px rgba(0,0,0,.5),0 0 80px rgba(67,97,238,.16); backdrop-filter:blur(20px); transform-style:preserve-3d; }
+    .scene-card::after { content:''; position:absolute; inset:0; background:linear-gradient(120deg,rgba(255,255,255,.16),transparent 25%,transparent 70%,rgba(76,201,240,.08)); pointer-events:none; }
+    .scene-card img { width:100%; height:100%; object-fit:cover; transform:scale(1.06); filter:saturate(.9) contrast(1.06) brightness(.72); transition:transform 1.3s cubic-bezier(.22,.61,.36,1); }
+    .story-scene.active .scene-card img { transform:scale(1); }
+    .scene-card .scene-overlay { position:absolute; inset:0; background:linear-gradient(to top,rgba(3,7,20,.92),rgba(3,7,20,.10) 58%,rgba(3,7,20,.2)); }
+    .scene-label { position:absolute; left:28px; right:28px; bottom:28px; z-index:2; display:flex; justify-content:space-between; align-items:end; }
+    .scene-label strong { font-size:2rem; letter-spacing:-.04em; }
+    .scene-label small { display:block; color:#9aa8c5; margin-top:4px; }
+    .scene-metric { font-size:3.5rem; font-weight:900; line-height:1; color:#4cc9f0; text-shadow:0 0 35px rgba(76,201,240,.45); }
+    .scene-orbit { position:absolute; width:82%; aspect-ratio:1; border:1px solid rgba(76,201,240,.18); border-radius:50%; transform:rotateX(65deg) rotateZ(18deg); animation:spinSlow 16s linear infinite; }
+    .scene-orbit::before,.scene-orbit::after { content:''; position:absolute; width:12px; height:12px; border-radius:50%; background:#4cc9f0; box-shadow:0 0 30px #4cc9f0; top:4%; left:50%; }
+    .scene-orbit::after { background:#b56cff; box-shadow:0 0 30px #b56cff; top:auto; left:auto; right:8%; bottom:20%; }
+    .story-progress { position:absolute; z-index:30; left:32px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:12px; }
+    .story-dot { width:7px; height:7px; border-radius:50%; background:#3a4664; transition:.35s ease; position:relative; }
+    .story-dot::after { content:attr(data-label); position:absolute; left:18px; top:50%; transform:translateY(-50%) translateX(-5px); white-space:nowrap; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase; color:#667390; opacity:0; transition:.3s ease; }
+    .story-dot.active { background:#4cc9f0; box-shadow:0 0 18px rgba(76,201,240,.8); transform:scale(1.5); }
+    .story-dot.active::after { opacity:1; transform:translateY(-50%) translateX(0); color:#aeb9d4; }
+    .story-scroll-hint { position:absolute; bottom:28px; left:50%; transform:translateX(-50%); z-index:30; color:#6e7b98; font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; display:flex; flex-direction:column; align-items:center; gap:8px; }
+    .story-scroll-hint span { width:1px; height:48px; background:linear-gradient(#4cc9f0,transparent); animation:scrollLine 1.5s ease-in-out infinite; }
+    .story-scene { position:absolute; inset:0; opacity:0; pointer-events:none; transition:opacity .55s ease; }
+    .story-scene.active { opacity:1; pointer-events:auto; }
+    .story-scene[data-scene='1'] .story-light.one { background:#4361ee; }
+    .story-scene[data-scene='2'] .story-light.one { background:#4cc9f0; }
+    .story-scene[data-scene='3'] .story-light.one { background:#7209b7; }
+    .story-scene[data-scene='4'] .story-light.one { background:#f72585; }
+    .story-scene[data-scene='5'] .story-light.one { background:#06d6a0; }
+    @keyframes spinSlow { to { transform:rotateX(65deg) rotateZ(378deg); } }
+    @keyframes scrollLine { 0%,100%{opacity:.35;transform:scaleY(.55);transform-origin:top}50%{opacity:1;transform:scaleY(1);transform-origin:top} }
+    @media(max-width:900px){
+      .scroll-story{height:360vh}.story-copy{width:100%;padding:0 5vw;align-self:end;padding-bottom:12vh}.story-title{font-size:clamp(3rem,13vw,5.5rem)}.story-desc{font-size:.95rem}.story-visual{width:72%;height:48vh;right:14%;top:8vh}.scene-visual{width:100%;height:100%}.story-progress{left:14px}.story-dot::after{display:none}.story-scroll-hint{display:none}
+    }
+    @media(prefers-reduced-motion:reduce){.scroll-story{height:auto}.story-sticky{position:relative;height:auto;min-height:100vh}.story-scene{position:relative;display:none;opacity:1;min-height:100vh}.story-scene.active{display:block}.story-progress,.story-scroll-hint{display:none}.story-title .line span,.story-desc,.story-actions{transform:none!important;opacity:1!important}}
+
+    /* ---- NAVBAR ---- */
+    .navbar-custom {
+      background: rgba(10,10,26,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--card-border);
+      padding: 16px 0;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    .navbar-brand-text {
+      font-size: 1.3rem;
+      font-weight: 800;
+      background: var(--gradient-blue);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-btn {
+      padding: 8px 22px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .nav-btn-outline {
+      border: 1px solid var(--card-border);
+      color: var(--text-light);
+      background: transparent;
+    }
+    .nav-btn-outline:hover { border-color: var(--blue); color: var(--text-light); background: rgba(67,97,238,0.1); }
+    .nav-btn-filled {
+      background: var(--gradient-blue);
+      color: white;
+      border: none;
+    }
+    .nav-btn-filled:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(67,97,238,0.4); color: white; }
+
+    /* ---- HERO ---- */
+    .hero-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 80px 0 60px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(90deg, rgba(5,8,23,.72) 0%, rgba(5,8,23,.42) 48%, rgba(5,8,23,.70) 100%),
+        radial-gradient(ellipse 80% 60% at 20% 40%, rgba(67,97,238,0.20) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 20%, rgba(114,9,183,0.20) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 60% 80%, rgba(76,201,240,0.14) 0%, transparent 60%),
+        url('tech-network.svg') center/cover no-repeat;
+      background-blend-mode:normal,screen,screen,screen,normal;
+    }
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(70px);
+      pointer-events: none;
+    }
+    .orb-1 { width: 500px; height: 500px; background: rgba(67,97,238,0.2); top: -150px; left: -150px; animation: float 8s ease-in-out infinite; }
+    .orb-2 { width: 350px; height: 350px; background: rgba(114,9,183,0.2); bottom: -100px; right: -80px; animation: float 10s ease-in-out infinite 2s; }
+    .orb-3 { width: 250px; height: 250px; background: rgba(76,201,240,0.15); top: 30%; right: 20%; animation: float 7s ease-in-out infinite 4s; }
+
+    /* Particles */
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: rgba(67,97,238,0.6);
+      border-radius: 50%;
+      animation: particleFloat linear infinite;
+      pointer-events: none;
+    }
+
+    .hero-content { position: relative; z-index: 2; }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(67,97,238,0.15);
+      border: 1px solid rgba(67,97,238,0.3);
+      padding: 7px 18px;
+      border-radius: 30px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--cyan);
+      margin-bottom: 20px;
+      animation: fadeIn 0.6s ease;
+    }
+    .hero-eyebrow .dot {
+      width: 8px; height: 8px;
+      background: var(--cyan);
+      border-radius: 50%;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    .hero-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      animation: fadeIn 0.6s ease 0.2s both;
+    }
+    .hero-title .gradient-word {
+      background: var(--gradient-blue);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% 200%;
+      animation: gradientMove 4s ease infinite;
+    }
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 540px;
+      line-height: 1.7;
+      margin-bottom: 36px;
+      animation: fadeIn 0.6s ease 0.4s both;
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      animation: fadeIn 0.6s ease 0.6s both;
+    }
+    .btn-hero-primary {
+      padding: 14px 32px;
+      background: var(--gradient-blue);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 30px rgba(67,97,238,0.35);
+    }
+    .btn-hero-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 35px rgba(67,97,238,0.5); color: white; }
+    .btn-hero-secondary {
+      padding: 14px 32px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      color: var(--text-light);
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+    .btn-hero-secondary:hover { border-color: rgba(114,9,183,0.5); background: rgba(114,9,183,0.1); color: var(--text-light); transform: translateY(-2px); }
+
+    /* Hero floating card */
+    .hero-visual {
+      position: relative;
+      z-index: 2;
+      animation: fadeIn 0.8s ease 0.3s both;
+    }
+    .dashboard-preview {
+      background: rgba(22,33,62,0.8);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 40px rgba(67,97,238,0.15);
+      animation: float 5s ease-in-out infinite;
+    }
+    .preview-topbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .preview-dot { width: 12px; height: 12px; border-radius: 50%; }
+    .preview-stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+    .preview-stat {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .preview-stat-num { font-size: 1.4rem; font-weight: 800; }
+    .preview-stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 3px; }
+    .preview-company {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .preview-logo {
+      width: 38px; height: 38px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 800; color: white;
+      flex-shrink: 0;
+    }
+    .preview-co-name { font-size: 0.88rem; font-weight: 600; color: var(--text-light); }
+    .preview-co-role { font-size: 0.75rem; color: var(--text-muted); }
+    .preview-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-left: auto;
+    }
+
+    /* ---- HOW IT WORKS ---- */
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+    .section-heading {
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 800;
+      color: var(--text-light);
+      margin-bottom: 14px;
+    }
+    .section-subheading {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    .step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 30px;
+      height: 100%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .step-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      right: 0; height: 3px;
+      background: var(--gradient-blue);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+    .step-card:hover { transform: translateY(-6px); border-color: rgba(67,97,238,0.3); box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+    .step-card:hover::before { transform: scaleX(1); }
+    .step-number {
+      width: 50px; height: 50px;
+      border-radius: 14px;
+      background: var(--gradient-blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 800; color: white;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 20px rgba(67,97,238,0.3);
+    }
+    .step-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+    }
+    .step-title { font-size: 1.05rem; font-weight: 700; color: var(--text-light); margin-bottom: 10px; }
+    .step-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* ---- STATS SECTION ---- */
+    .stats-section {
+      background: var(--secondary);
+      border-top: 1px solid var(--card-border);
+      border-bottom: 1px solid var(--card-border);
+      padding: 70px 0;
+    }
+    .big-stat { text-align: center; }
+    .big-stat-num {
+      font-size: 3rem;
+      font-weight: 900;
+      background: var(--gradient-blue);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .big-stat-label { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
+
+    /* ---- COMPANIES ---- */
+    .company-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 22px;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: var(--text-light);
+    }
+    .company-chip:hover {
+      border-color: rgba(67,97,238,0.5);
+      background: rgba(67,97,238,0.08);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      color: var(--text-light);
+    }
+    .chip-logo {
+      width: 42px; height: 42px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 0.9rem; color: white;
+    }
+    .chip-name { font-weight: 600; font-size: 0.95rem; }
+    .chip-industry { font-size: 0.78rem; color: var(--text-muted); }
+
+    /* ---- FEATURES ---- */
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 28px;
+      height: 100%;
+      transition: all 0.3s ease;
+    }
+    .feature-card:hover { transform: translateY(-5px); border-color: rgba(67,97,238,0.3); box-shadow: 0 15px 40px rgba(0,0,0,0.3); }
+    .feature-icon {
+      width: 54px; height: 54px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 18px;
+    }
+    .feature-title { font-size: 1rem; font-weight: 700; color: var(--text-light); margin-bottom: 10px; }
+    .feature-desc { font-size: 0.87rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* ---- CTA ---- */
+    .cta-section {
+      background: linear-gradient(135deg, rgba(67,97,238,0.15), rgba(114,9,183,0.15));
+      border: 1px solid rgba(67,97,238,0.2);
+      border-radius: 24px;
+      padding: 60px 40px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -20%;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(67,97,238,0.3), transparent 70%);
+      border-radius: 50%;
+    }
+    .cta-section::after {
+      content: '';
+      position: absolute;
+      bottom: -50%; right: -10%;
+      width: 250px; height: 250px;
+      background: radial-gradient(circle, rgba(114,9,183,0.25), transparent 70%);
+      border-radius: 50%;
+    }
+    .cta-content { position: relative; z-index: 1; }
+
+    /* ---- FOOTER ---- */
+    footer {
+      background: var(--secondary);
+      border-top: 1px solid var(--card-border);
+      padding: 30px 0;
+    }
+    .footer-text { color: var(--text-muted); font-size: 0.85rem; }
+    .footer-brand {
+      font-weight: 700;
+      background: var(--gradient-blue);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ---- SECTION PADDING ---- */
+    .section-pad { padding: 90px 0; }
+
+    /* ---- SCROLL REVEAL ---- */
+    .reveal { opacity: 0; transform: translateY(44px) scale(.97); filter: blur(6px); transition: opacity .75s cubic-bezier(.2,.8,.2,1), transform .75s cubic-bezier(.2,.8,.2,1), filter .75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+    .section-pad .container, .stats-section .container { position:relative; z-index:2; }
+      
+/* =========================================================
+   PREMIUM CINEMATIC INTRO + REAL COMPANY PHOTO GALLERY
+   ========================================================= */
+.cinematic-intro{
+  position:fixed; inset:0; z-index:99999; overflow:hidden;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(45,79,170,.24), transparent 30%),
+    radial-gradient(circle at 15% 85%, rgba(114,9,183,.20), transparent 35%),
+    linear-gradient(135deg,#030711 0%,#071229 52%,#02050d 100%);
+  color:#fff; display:grid; place-items:center;
+  transition:opacity .9s cubic-bezier(.22,1,.36,1),visibility .9s;
+}
+.cinematic-intro.is-hidden{opacity:0;visibility:hidden;pointer-events:none}
+.cinematic-intro::before{
+  content:""; position:absolute; inset:-30%;
+  background-image:linear-gradient(rgba(90,130,255,.06) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(90,130,255,.06) 1px,transparent 1px);
+  background-size:52px 52px; transform:perspective(700px) rotateX(62deg) translateY(16%);
+  animation:introGrid 8s linear infinite;
+}
+.intro-noise{position:absolute;inset:0;opacity:.055;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+}
+.intro-topline,.intro-bottomline{
+  position:absolute;left:4vw;right:4vw;display:flex;justify-content:space-between;
+  font-size:.62rem;letter-spacing:.22em;color:rgba(225,235,255,.62);z-index:4
+}
+.intro-topline{top:28px}.intro-bottomline{bottom:28px}
+.intro-bottomline button{
+  border:0;background:none;color:#b9c8ea;font:inherit;letter-spacing:.16em;cursor:pointer
+}
+.intro-bottomline button:hover{color:#fff}
+.orbit-stage{position:relative;width:min(78vw,860px);height:min(78vw,720px);z-index:2}
+.orbit-ring{position:absolute;left:50%;top:50%;border:1px solid rgba(101,145,255,.20);border-radius:50%;transform:translate(-50%,-50%) rotateX(64deg);box-shadow:0 0 60px rgba(67,97,238,.08)}
+.orbit-ring-a{width:72%;height:32%;animation:orbitPulse 4s ease-in-out infinite}
+.orbit-ring-b{width:92%;height:42%;opacity:.45;animation:orbitPulse 5s ease-in-out infinite reverse}
+.intro-center{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:330px;text-align:center;z-index:5;animation:introCenter 1.5s .35s both
+}
+.intro-symbol{
+  width:48px;height:48px;margin:0 auto 18px;border-radius:14px;
+  display:grid;place-items:center;background:linear-gradient(135deg,#4361ee,#7209b7);
+  box-shadow:0 0 50px rgba(67,97,238,.55);font-size:1.2rem
+}
+.intro-kicker{font-size:.55rem;letter-spacing:.34em;color:#91a5d2;margin-bottom:10px}
+.intro-title-xl{font-weight:900;font-size:clamp(2.5rem,6vw,5rem);line-height:.82;letter-spacing:-.06em}
+.intro-title-xl span{
+  background:linear-gradient(90deg,#5b7cff,#a855f7,#42d8ff,#5b7cff);
+  background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  animation:gradientMove 4s ease infinite
+}
+.intro-rule{width:70px;height:1px;background:linear-gradient(90deg,transparent,#5b7cff,transparent);margin:22px auto 13px}
+.intro-caption{font-size:.58rem;letter-spacing:.27em;color:#7285ae}
+.orbit-photo{
+  position:absolute;width:150px;height:190px;border-radius:16px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.22);background:#101a32;
+  box-shadow:0 22px 70px rgba(0,0,0,.5),0 0 35px rgba(67,97,238,.13);
+  opacity:0;transform:translate(-50%,-50%) scale(.35);
+  animation:orbitPhotoIn 1.1s cubic-bezier(.16,1,.3,1) forwards;
+}
+.orbit-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.85) contrast(1.08)}
+.orbit-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(2,5,13,.86))}
+.orbit-photo span{position:absolute;left:12px;bottom:11px;z-index:2;font-size:.56rem;letter-spacing:.17em;font-weight:800}
+.photo-tcs{left:12%;top:25%;animation-delay:.45s;transform:translate(-50%,-50%) rotate(-8deg)}
+.photo-infosys{left:88%;top:23%;animation-delay:.58s;transform:translate(-50%,-50%) rotate(8deg)}
+.photo-accenture{left:94%;top:72%;animation-delay:.71s;transform:translate(-50%,-50%) rotate(7deg)}
+.photo-capgemini{left:50%;top:90%;animation-delay:.84s;transform:translate(-50%,-50%) rotate(-3deg)}
+.photo-wipro{left:7%;top:70%;animation-delay:.97s;transform:translate(-50%,-50%) rotate(-8deg)}
+@keyframes orbitPhotoIn{to{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(0)}}
+@keyframes introCenter{from{opacity:0;transform:translate(-50%,-45%) scale(.85)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes introGrid{from{transform:perspective(700px) rotateX(62deg) translateY(16%) translateX(0)}to{transform:perspective(700px) rotateX(62deg) translateY(16%) translateX(-52px)}}
+@keyframes orbitPulse{50%{opacity:.55;transform:translate(-50%,-50%) rotateX(64deg) scale(1.03)}}
+.cinematic-intro.is-exiting .orbit-photo{animation:orbitExit .7s cubic-bezier(.7,0,.84,0) forwards}
+.cinematic-intro.is-exiting .intro-center{animation:introExit .65s ease forwards}
+@keyframes orbitExit{to{opacity:0;transform:translate(-50%,-50%) scale(.12) rotate(15deg)}}
+@keyframes introExit{to{opacity:0;transform:translate(-50%,-50%) scale(1.25);filter:blur(10px)}}
+
+.company-gallery-section{
+  position:relative;overflow:hidden;padding:115px 0 125px;
+  background:linear-gradient(180deg,#070d1b 0%,#050914 55%,#071021 100%);
+}
+.company-gallery-glow{position:absolute;width:60vw;height:60vw;border-radius:50%;
+  left:50%;top:30%;transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(67,97,238,.13),transparent 62%);filter:blur(20px)}
+.gallery-heading{display:flex;align-items:end;justify-content:space-between;gap:40px;margin-bottom:45px}
+.gallery-heading .section-subheading{max-width:430px;margin:0}
+.company-photo-rail{
+  display:grid;grid-template-columns:repeat(5,minmax(220px,1fr));gap:16px;align-items:start
+}
+.company-photo-card{
+  min-width:0;border:1px solid rgba(255,255,255,.12);border-radius:20px;overflow:hidden;
+  background:rgba(255,255,255,.045);backdrop-filter:blur(14px);
+  box-shadow:0 20px 70px rgba(0,0,0,.28);transition:transform .65s cubic-bezier(.16,1,.3,1),border-color .35s,box-shadow .35s;
+}
+.company-photo-card:nth-child(2){margin-top:38px}.company-photo-card:nth-child(4){margin-top:55px}
+.company-photo-card:hover{transform:translateY(-12px) rotateX(2deg) rotateY(-2deg);border-color:rgba(99,130,255,.55);box-shadow:0 30px 90px rgba(20,50,140,.28)}
+.company-photo-media{height:340px;position:relative;overflow:hidden}
+.company-photo-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1s cubic-bezier(.16,1,.3,1);filter:saturate(.85) contrast(1.08)}
+.company-photo-card:hover .company-photo-media img{transform:scale(1.08)}
+.photo-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,7,17,.04) 25%,rgba(3,7,17,.86) 100%)}
+.photo-number,.photo-city{position:absolute;z-index:2;top:15px;font-size:.56rem;letter-spacing:.16em}
+.photo-number{left:15px;color:#d9e2ff}.photo-city{right:15px;color:#a7b8df}
+.company-photo-meta{display:flex;justify-content:space-between;align-items:center;padding:17px 16px}
+.company-photo-meta strong{display:block;font-size:1.08rem}.company-photo-meta span{display:block;font-size:.7rem;color:#8795b5;margin-top:3px}
+.company-photo-meta>i{color:#6e89ff;transition:transform .3s}.company-photo-card:hover .company-photo-meta>i{transform:translate(3px,-3px)}
+@media(max-width:1100px){.company-photo-rail{grid-template-columns:repeat(3,1fr)}.company-photo-card:nth-child(4){margin-top:0}}
+@media(max-width:700px){
+  .orbit-photo{width:88px;height:118px}.orbit-stage{width:100vw;height:76vh}
+  .photo-tcs{left:9%;top:30%}.photo-infosys{left:91%;top:28%}.photo-accenture{left:92%;top:75%}.photo-capgemini{left:50%;top:91%}.photo-wipro{left:8%;top:74%}
+  .intro-center{width:280px}.intro-title-xl{font-size:3rem}
+  .intro-topline,.intro-bottomline{left:18px;right:18px;font-size:.48rem}.intro-topline span:nth-child(2){display:none}
+  .gallery-heading{display:block}.gallery-heading .section-subheading{margin-top:18px}.company-photo-rail{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:15px}
+  .company-photo-card{min-width:78vw;scroll-snap-align:center}.company-photo-card:nth-child(2),.company-photo-card:nth-child(4){margin-top:0}.company-photo-media{height:400px}
+}
+@media(prefers-reduced-motion:reduce){
+  .cinematic-intro *,.company-photo-card,.company-photo-card img{animation:none!important;transition:none!important}
+}
+
+</style>
+<script src="js/company-config.js"></script>
+</head>
+<body>
+  <div class="tech-backdrop" aria-hidden="true"></div>
+  <div class="scroll-progress" id="scrollProgress"></div>
+  <div class="cursor-glow" id="cursorGlow"></div>
+  <!-- ===================== CINEMATIC COMPANY INTRO ===================== -->
+  <div class="cinematic-intro" id="cinematicIntro" aria-hidden="true">
+    <div class="intro-noise"></div>
+    <div class="intro-topline">
+      <span>SMART PLACEMENT PORTAL</span>
+      <span>CAREERS / 01</span>
+      <span>INDIA / 2026</span>
+    </div>
+
+    <div class="orbit-stage">
+      <div class="orbit-ring orbit-ring-a"></div>
+      <div class="orbit-ring orbit-ring-b"></div>
+
+      <div class="orbit-photo photo-tcs">
+        <img src="https://static.ambitionbox.com/api/v2/photo/eVg0b1FWcVh5T2wrWDNuZmJnZ1pCdz09" alt="TCS office">
+        <span>TCS</span>
+      </div>
+      <div class="orbit-photo photo-infosys">
+        <img src="https://media.glassdoor.com/l/af/e1/72/88/infy-pune.jpg" alt="Infosys Pune campus">
+        <span>INFOSYS</span>
+      </div>
+      <div class="orbit-photo photo-accenture">
+        <img src="https://jll-global-gdim-res.cloudinary.com/image/upload/f_auto,dpr_auto,w_1920,q_70/v1654111242/IN_ML20220601/Gigaplex---Building-No-6--Mindspace-Airoli-West-_92569_20220601_001.jpg" alt="Accenture Airoli office">
+        <span>ACCENTURE</span>
+      </div>
+      <div class="orbit-photo photo-capgemini">
+        <img src="https://www.capgemini.com/in-en/wp-content/uploads/sites/18/2022/10/IMG-20220923-WA0005.jpg" alt="Capgemini Mumbai office">
+        <span>CAPGEMINI</span>
+      </div>
+      <div class="orbit-photo photo-wipro">
+        <img src="https://media.glassdoor.com/l/52/91/2a/c5/bangalore-campus.jpg" alt="Wipro campus">
+        <span>WIPRO</span>
+      </div>
+
+      <div class="intro-center">
+        <div class="intro-symbol"><i class="bi bi-mortarboard-fill"></i></div>
+        <div class="intro-kicker">CONNECT • APPLY • GET HIRED</div>
+        <div class="intro-title-xl">SMART<br><span>PLACEMENT</span></div>
+        <div class="intro-rule"></div>
+        <div class="intro-caption">A DIGITAL CAREER EXPERIENCE</div>
+      </div>
+    </div>
+
+    <div class="intro-bottomline">
+      <span>STUDENTS × RECRUITERS</span>
+      <button type="button" id="skipIntro">SKIP INTRO <i class="bi bi-arrow-up-right"></i></button>
+    </div>
+  </div>
+
+  <!-- ===================== NAVBAR ===================== -->
+  <nav class="navbar-custom">
+    <div class="container d-flex align-items-center justify-content-between">
+      <a href="index.html" class="text-decoration-none d-flex align-items-center gap-2">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--gradient-blue);display:flex;align-items:center;justify-content:center;font-size:1rem;color:white;">
+          <i class="bi bi-mortarboard-fill"></i>
+        </div>
+        <span class="navbar-brand-text">Smart Placement Portal</span>
+      </a>
+      <div class="d-flex gap-3 align-items-center">
+        <a href="student-login.html" class="nav-btn nav-btn-outline d-none d-md-inline-flex">
+          <i class="bi bi-person-fill"></i> Student Login
+        </a>
+        <a href="placement-cell/login.html" class="nav-btn nav-btn-filled magnetic-btn">
+          <i class="bi bi-shield-lock-fill"></i> Placement Cell
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero-section">
+    <div class="hero-bg"></div>
+    <div class="hero-orb orb-1"></div>
+    <div class="hero-orb orb-2"></div>
+    <div class="hero-orb orb-3"></div>
+    <!-- Particles injected by JS -->
+    <div id="particles"></div>
+
+    <div class="container hero-content">
+      <div class="row align-items-center gy-5">
+        <!-- Left: Text -->
+        <div class="col-lg-6">
+          <div class="hero-eyebrow">
+            <span class="dot"></span>
+            College Placement Management System
+          </div>
+          <h1 class="hero-title">
+            Connecting Students<br>With Their <span class="gradient-word">Career<br>Opportunities</span>
+          </h1>
+          <p class="hero-subtitle">
+            A modern, intelligent placement portal that bridges the gap between talented students and top companies. Track drives, apply instantly, and land your dream job.
+          </p>
+          <div class="hero-buttons">
+            <a href="student-login.html" class="btn-hero-primary magnetic-btn">
+              <i class="bi bi-person-fill"></i>
+              Student Portal
+            </a>
+            <a href="placement-cell/login.html" class="btn-hero-secondary magnetic-btn">
+              <i class="bi bi-shield-lock-fill"></i>
+              Placement Cell
+            </a>
+          </div>
+          <!-- Trust badges -->
+          <div class="d-flex gap-4 mt-5 flex-wrap">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-people-fill" style="color:var(--blue);font-size:1.1rem;"></i>
+              <span style="font-size:0.85rem;color:var(--text-muted);">500+ Students</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-building-fill" style="color:var(--purple);font-size:1.1rem;"></i>
+              <span style="font-size:0.85rem;color:var(--text-muted);">50+ Companies</span>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-trophy-fill" style="color:var(--yellow);font-size:1.1rem;"></i>
+              <span style="font-size:0.85rem;color:var(--text-muted);">85% Placement Rate</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Dashboard preview -->
+        <div class="col-lg-6 d-none d-lg-block">
+          <div class="hero-visual">
+            <div class="dashboard-preview scroll-card">
+              <!-- Window controls -->
+              <div class="preview-topbar">
+                <div class="preview-dot" style="background:#ef233c;"></div>
+                <div class="preview-dot" style="background:#ffd166;"></div>
+                <div class="preview-dot" style="background:#06d6a0;"></div>
+                <span style="font-size:0.75rem;color:var(--text-muted);margin-left:10px;">Student Dashboard</span>
+              </div>
+              <!-- Stats preview -->
+              <div class="preview-stat-grid">
+                <div class="preview-stat">
+                  <div class="preview-stat-num" style="color:#4cc9f0;">05</div>
+                  <div class="preview-stat-label">Active Drives</div>
+                </div>
+                <div class="preview-stat">
+                  <div class="preview-stat-num" style="color:#4361ee;">03</div>
+                  <div class="preview-stat-label">Applied</div>
+                </div>
+                <div class="preview-stat">
+                  <div class="preview-stat-num" style="color:#ffd166;">02</div>
+                  <div class="preview-stat-label">Shortlisted</div>
+                </div>
+                <div class="preview-stat">
+                  <div class="preview-stat-num" style="color:#06d6a0;">01</div>
+                  <div class="preview-stat-label">Selected</div>
+                </div>
+              </div>
+              <!-- Companies preview -->
+              <div class="preview-company">
+                <div class="preview-logo" style="background:#4361ee;">TN</div>
+                <div>
+                  <div class="preview-co-name">TCS</div>
+                  <div class="preview-co-role">Java Developer • 8 LPA</div>
+                </div>
+                <div class="preview-badge" style="background:rgba(76,201,240,0.2);color:#4cc9f0;border:1px solid rgba(76,201,240,0.4);">Shortlisted</div>
+              </div>
+              <div class="preview-company">
+                <div class="preview-logo" style="background:#7209b7;">DM</div>
+                <div>
+                  <div class="preview-co-name">Infosys</div>
+                  <div class="preview-co-role">Data Analyst • 9 LPA</div>
+                </div>
+                <div class="preview-badge" style="background:rgba(67,97,238,0.2);color:#4361ee;border:1px solid rgba(67,97,238,0.4);">Applied</div>
+              </div>
+              <div class="preview-company">
+                <div class="preview-logo" style="background:#06d6a0;">IX</div>
+                <div>
+                  <div class="preview-co-name">Accenture</div>
+                  <div class="preview-co-role">AI/ML Intern • 6 LPA</div>
+                </div>
+                <div class="preview-badge" style="background:rgba(6,214,160,0.2);color:#06d6a0;border:1px solid rgba(6,214,160,0.4);">Selected</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ===================== CINEMATIC SCROLL STORY ===================== -->
+  <section class="scroll-story" id="scrollStory" aria-label="Cinematic placement story">
+    <div class="story-sticky">
+      <div class="story-grid"></div><div class="story-noise"></div>
+      <div class="story-light one"></div><div class="story-light two"></div>
+      <div class="story-progress" id="storyProgress">
+        <div class="story-dot active" data-label="Connect" data-scene-dot="0"></div>
+        <div class="story-dot" data-label="Discover" data-scene-dot="1"></div>
+        <div class="story-dot" data-label="Companies" data-scene-dot="2"></div>
+        <div class="story-dot" data-label="Track" data-scene-dot="3"></div>
+        <div class="story-dot" data-label="Launch" data-scene-dot="4"></div>
+      </div>
+
+      <div class="story-scene active" data-scene="1">
+        <div class="story-content">
+          <div class="story-copy">
+            <div class="story-kicker"><i class="bi bi-stars"></i> Smart campus recruitment</div>
+            <h2 class="story-title"><span class="line"><span>YOUR</span></span><span class="line"><span>CAREER</span></span><span class="line"><span class="story-gradient">STARTS HERE.</span></span></h2>
+            <p class="story-desc">One cinematic space connecting ambitious students, placement officers and real opportunities.</p>
+            <div class="story-actions"><a href="student-login.html" class="btn-hero-primary magnetic-btn">Explore Student Portal <i class="bi bi-arrow-up-right"></i></a></div>
+          </div>
+          <div class="story-visual"><div class="scene-orbit"></div><div class="scene-visual"><div class="scene-card"><img src="tech-network.svg" alt="Futuristic technology network"><div class="scene-overlay"></div><div class="scene-label"><div><strong>Smart Placement</strong><small>One connected career ecosystem</small></div><div class="scene-metric">01</div></div></div></div></div>
+        </div>
+      </div>
+
+      <div class="story-scene" data-scene="2">
+        <div class="story-content">
+          <div class="story-copy"><div class="story-kicker"><i class="bi bi-compass"></i> Discover opportunities</div><h2 class="story-title"><span class="line"><span>FIND THE</span></span><span class="line"><span>RIGHT</span></span><span class="line"><span class="story-gradient">DRIVE.</span></span></h2><p class="story-desc">Search live placement drives, compare packages, check eligibility and apply without leaving the portal.</p><div class="story-actions"><a href="student/drives.html" class="btn-hero-primary magnetic-btn">Browse Drives <i class="bi bi-arrow-right"></i></a></div></div>
+          <div class="story-visual"><div class="scene-visual"><div class="scene-card"><img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=85" alt="Technology team collaboration" loading="lazy"><div class="scene-overlay"></div><div class="scene-label"><div><strong>Placement Drives</strong><small>Roles · packages · eligibility · deadlines</small></div><div class="scene-metric">02</div></div></div></div></div>
+        </div>
+      </div>
+
+      <div class="story-scene" data-scene="3">
+        <div class="story-content">
+          <div class="story-copy"><div class="story-kicker"><i class="bi bi-buildings"></i> Recruiter network</div><h2 class="story-title"><span class="line"><span>MEET YOUR</span></span><span class="line"><span>FUTURE</span></span><span class="line"><span class="story-gradient">EMPLOYER.</span></span></h2><p class="story-desc">Move through a premium recruiter gallery featuring TCS, Infosys, Accenture, Capgemini and Wipro.</p><div class="story-actions"><a href="#companyGallery" class="btn-hero-secondary magnetic-btn">Meet Recruiters <i class="bi bi-arrow-down"></i></a></div></div>
+          <div class="story-visual"><div class="scene-visual"><div class="scene-card"><img src="https://jll-global-gdim-res.cloudinary.com/image/upload/f_auto,dpr_auto,w_1920,q_70/v1654111242/IN_ML20220601/Gigaplex---Building-No-6--Mindspace-Airoli-West-_92569_20220601_001.jpg" alt="Technology office campus" loading="lazy"><div class="scene-overlay"></div><div class="scene-label"><div><strong>Accenture · Airoli</strong><small>Real-world recruiter environment</small></div><div class="scene-metric">03</div></div></div></div></div>
+        </div>
+      </div>
+
+      <div class="story-scene" data-scene="4">
+        <div class="story-content">
+          <div class="story-copy"><div class="story-kicker"><i class="bi bi-activity"></i> Track every move</div><h2 class="story-title"><span class="line"><span>FROM</span></span><span class="line"><span>APPLIED</span></span><span class="line"><span class="story-gradient">TO SELECTED.</span></span></h2><p class="story-desc">Every application becomes a live journey. Placement officers update status and students see the change instantly.</p><div class="story-actions"><a href="student/applications.html" class="btn-hero-primary magnetic-btn">View Applications <i class="bi bi-arrow-right"></i></a></div></div>
+          <div class="story-visual"><div class="scene-visual"><div class="scene-card" style="padding:30px;background:linear-gradient(145deg,#0e1730,#090d20);"><div style="height:100%;display:flex;flex-direction:column;justify-content:center;gap:18px;"><div style="font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:#7785a5;">Application timeline</div><div style="font-size:2.6rem;font-weight:900;letter-spacing:-.05em;">Applied <span style="color:#4cc9f0;">→</span> Shortlisted</div><div style="height:8px;border-radius:20px;background:linear-gradient(90deg,#4361ee,#4cc9f0,#06d6a0);box-shadow:0 0 30px rgba(76,201,240,.3);"></div><div style="display:flex;justify-content:space-between;color:#9aa8c5;font-size:.85rem;"><span>Application received</span><span>Officer review</span><span>Next: Interview</span></div></div><div class="scene-label"><div><strong>Live Status</strong><small>Connected student + placement cell workflow</small></div><div class="scene-metric">04</div></div></div></div></div>
+        </div>
+      </div>
+
+      <div class="story-scene" data-scene="5">
+        <div class="story-content">
+          <div class="story-copy"><div class="story-kicker"><i class="bi bi-rocket-takeoff"></i> Your next chapter</div><h2 class="story-title"><span class="line"><span>TURN</span></span><span class="line"><span>OPPORTUNITY</span></span><span class="line"><span class="story-gradient">INTO MOMENTUM.</span></span></h2><p class="story-desc">Login, explore, apply and build your placement story — all from one modern portal.</p><div class="story-actions"><a href="student-login.html" class="btn-hero-primary magnetic-btn">Start Your Journey <i class="bi bi-arrow-up-right"></i></a><a href="placement-cell/login.html" class="btn-hero-secondary magnetic-btn">Placement Cell <i class="bi bi-shield-lock"></i></a></div></div>
+          <div class="story-visual"><div class="scene-visual"><div class="scene-card"><img src="https://static.ambitionbox.com/api/v2/photo/eVg0b1FWcVh5T2wrWDNuZmJnZ1pCdz09" alt="TCS office" loading="lazy"><div class="scene-overlay"></div><div class="scene-label"><div><strong>Built for the next opportunity</strong><small>Smart Placement Portal</small></div><div class="scene-metric">05</div></div></div></div></div>
+        </div>
+      </div>
+      <div class="story-scroll-hint">Scroll to transform <span></span></div>
+    </div>
+  </section>
+
+  <!-- ===================== HOW IT WORKS ===================== -->
+  <section class="section-pad" style="background:var(--primary);">
+    <div class="container">
+      <div class="text-center mb-5 reveal">
+        <div class="section-label">Simple Process</div>
+        <h2 class="section-heading">How It Works</h2>
+        <p class="section-subheading mx-auto">From registration to placement, everything is managed seamlessly in one portal.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3 reveal">
+          <div class="step-card scroll-card">
+            <div class="step-number">01</div>
+            <div class="step-icon" style="background:rgba(67,97,238,0.15);color:#4361ee;">
+              <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <div class="step-title">Register & Login</div>
+            <div class="step-desc">Students register with their academic details including branch, CGPA, and skills. Access the portal with secure credentials.</div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 reveal" style="transition-delay:0.1s;">
+          <div class="step-card scroll-card">
+            <div class="step-number">02</div>
+            <div class="step-icon" style="background:rgba(76,201,240,0.15);color:#4cc9f0;">
+              <i class="bi bi-search"></i>
+            </div>
+            <div class="step-title">Browse Drives</div>
+            <div class="step-desc">View all active placement drives, check eligibility criteria, package offered, eligible branches, and application deadlines.</div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 reveal" style="transition-delay:0.2s;">
+          <div class="step-card scroll-card">
+            <div class="step-number">03</div>
+            <div class="step-icon" style="background:rgba(247,37,133,0.15);color:#f72585;">
+              <i class="bi bi-send-fill"></i>
+            </div>
+            <div class="step-title">Apply Instantly</div>
+            <div class="step-desc">One-click application for eligible drives. The system automatically checks your CGPA, branch, and deadline before submitting.</div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 reveal" style="transition-delay:0.3s;">
+          <div class="step-card scroll-card">
+            <div class="step-number">04</div>
+            <div class="step-icon" style="background:rgba(6,214,160,0.15);color:#06d6a0;">
+              <i class="bi bi-trophy-fill"></i>
+            </div>
+            <div class="step-title">Get Placed</div>
+            <div class="step-desc">Track your application status from Applied → Shortlisted → Interview → Selected. View your placement result in history.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== STATS ===================== -->
+  <section class="stats-section">
+    <div class="container">
+      <div class="row g-4 text-center">
+        <div class="col-6 col-md-3 reveal">
+          <div class="big-stat scroll-float">
+            <div class="big-stat-num" id="stat1">0</div>
+            <div class="big-stat-label">Students Registered</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3 reveal" style="transition-delay:0.1s;">
+          <div class="big-stat scroll-float">
+            <div class="big-stat-num" id="stat2">0</div>
+            <div class="big-stat-label">Top Companies</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3 reveal" style="transition-delay:0.2s;">
+          <div class="big-stat scroll-float">
+            <div class="big-stat-num" id="stat3">0<span style="-webkit-text-fill-color:#4cc9f0;">%</span></div>
+            <div class="big-stat-label">Placement Success Rate</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3 reveal" style="transition-delay:0.3s;">
+          <div class="big-stat scroll-float">
+            <div class="big-stat-num" id="stat4">0<span style="font-size:1.5rem;-webkit-text-fill-color:#06d6a0;"> LPA</span></div>
+            <div class="big-stat-label">Highest Package</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== COMPANIES ===================== -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="text-center mb-5 reveal">
+        <div class="section-label">Recruiters</div>
+        <h2 class="section-heading">Top Hiring Companies</h2>
+        <p class="section-subheading mx-auto">Industry leaders across IT, analytics, cloud, and product engineering actively recruit from our campus.</p>
+      </div>
+      <div class="row g-3 justify-content-center">
+        <div class="col-auto reveal">
+          <div class="company-chip scroll-card">
+            <div class="chip-logo" style="background:#4361ee;">TN</div>
+            <div>
+              <div class="chip-name">TCS</div>
+              <div class="chip-industry">Information Technology</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-auto reveal" style="transition-delay:0.05s;">
+          <div class="company-chip scroll-card">
+            <div class="chip-logo" style="background:#7209b7;">CS</div>
+            <div>
+              <div class="chip-name">Capgemini</div>
+              <div class="chip-industry">Software Development</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-auto reveal" style="transition-delay:0.1s;">
+          <div class="company-chip scroll-card">
+            <div class="chip-logo" style="background:#f72585;">DM</div>
+            <div>
+              <div class="chip-name">Infosys</div>
+              <div class="chip-industry">Data Analytics</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-auto reveal" style="transition-delay:0.15s;">
+          <div class="company-chip scroll-card">
+            <div class="chip-logo" style="background:#4cc9f0;">CC</div>
+            <div>
+              <div class="chip-name">Wipro</div>
+              <div class="chip-industry">Cloud Services</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-auto reveal" style="transition-delay:0.2s;">
+          <div class="company-chip scroll-card">
+            <div class="chip-logo" style="background:#06d6a0;">IX</div>
+            <div>
+              <div class="chip-name">Accenture</div>
+              <div class="chip-industry">Product Engineering</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Package chips -->
+      <div class="d-flex gap-2 justify-content-center mt-4 flex-wrap">
+        <span style="background:rgba(67,97,238,0.15);border:1px solid rgba(67,97,238,0.3);padding:6px 16px;border-radius:20px;font-size:0.8rem;color:#4361ee;font-weight:600;">Java Developer • 8 LPA</span>
+        <span style="background:rgba(114,9,183,0.15);border:1px solid rgba(114,9,183,0.3);padding:6px 16px;border-radius:20px;font-size:0.8rem;color:#b87fff;font-weight:600;">Full Stack Dev • 7.5 LPA</span>
+        <span style="background:rgba(247,37,133,0.15);border:1px solid rgba(247,37,133,0.3);padding:6px 16px;border-radius:20px;font-size:0.8rem;color:#f72585;font-weight:600;">Data Analyst • 9 LPA</span>
+        <span style="background:rgba(76,201,240,0.15);border:1px solid rgba(76,201,240,0.3);padding:6px 16px;border-radius:20px;font-size:0.8rem;color:#4cc9f0;font-weight:600;">DevOps Engineer • 10 LPA</span>
+        <span style="background:rgba(6,214,160,0.15);border:1px solid rgba(6,214,160,0.3);padding:6px 16px;border-radius:20px;font-size:0.8rem;color:#06d6a0;font-weight:600;">AI/ML Intern • 6 LPA</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== RECRUITER MOTION STRIP ===================== -->
+  <section class="section-pad" style="padding-top:10px;padding-bottom:80px;">
+    <div class="container">
+      <div class="text-center reveal">
+        <div class="section-label">REAL-WORLD RECRUITERS</div>
+        <p class="section-subheading mx-auto" style="margin-bottom:0;">Explore opportunities from recognizable technology and consulting brands.</p>
+      </div>
+      <div class="recruiter-marquee reveal">
+        <div class="recruiter-track">
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=tcs.com&sz=128" alt="TCS logo"><div><strong>TCS</strong><small>Technology</small></div></div>
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=infosys.com&sz=128" alt="Infosys logo"><div><strong>Infosys</strong><small>IT Services</small></div></div>
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=accenture.com&sz=128" alt="Accenture logo"><div><strong>Accenture</strong><small>Consulting & Tech</small></div></div>
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=capgemini.com&sz=128" alt="Capgemini logo"><div><strong>Capgemini</strong><small>Engineering</small></div></div>
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=wipro.com&sz=128" alt="Wipro logo"><div><strong>Wipro</strong><small>Technology</small></div></div>
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=tcs.com&sz=128" alt="TCS logo"><div><strong>TCS</strong><small>Technology</small></div></div>
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=infosys.com&sz=128" alt="Infosys logo"><div><strong>Infosys</strong><small>IT Services</small></div></div>
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=accenture.com&sz=128" alt="Accenture logo"><div><strong>Accenture</strong><small>Consulting & Tech</small></div></div>
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=capgemini.com&sz=128" alt="Capgemini logo"><div><strong>Capgemini</strong><small>Engineering</small></div></div>
+          <div class="recruiter-pill"><img src="https://www.google.com/s2/favicons?domain=wipro.com&sz=128" alt="Wipro logo"><div><strong>Wipro</strong><small>Technology</small></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== COMPANY PHOTO GALLERY ===================== -->
+  <section class="company-gallery-section" id="companyGallery">
+    <div class="company-gallery-glow"></div>
+    <div class="container position-relative">
+      <div class="gallery-heading reveal">
+        <div>
+          <div class="section-label">REAL COMPANY SPACES</div>
+          <h2 class="section-heading">Where Your Career<br><span class="gradient-word">Could Begin.</span></h2>
+        </div>
+        <p class="section-subheading">Explore real office and campus photography from major technology recruiters. Scroll to move through the collection.</p>
+      </div>
+
+      <div class="company-photo-rail">
+        <article class="company-photo-card scroll-card" data-company="TCS">
+          <div class="company-photo-media">
+            <img src="https://static.ambitionbox.com/api/v2/photo/eVg0b1FWcVh5T2wrWDNuZmJnZ1pCdz09" alt="TCS office entrance" loading="lazy">
+            <div class="photo-overlay"></div>
+            <span class="photo-number">01</span>
+            <span class="photo-city">MUMBAI / THANE</span>
+          </div>
+          <div class="company-photo-meta">
+            <div><strong>TCS</strong><span>Technology & Consulting</span></div>
+            <i class="bi bi-arrow-up-right"></i>
+          </div>
+        </article>
+
+        <article class="company-photo-card scroll-card" data-company="Infosys">
+          <div class="company-photo-media">
+            <img src="https://media.glassdoor.com/l/af/e1/72/88/infy-pune.jpg" alt="Infosys Pune campus" loading="lazy">
+            <div class="photo-overlay"></div>
+            <span class="photo-number">02</span>
+            <span class="photo-city">PUNE / HINJAWADI</span>
+          </div>
+          <div class="company-photo-meta">
+            <div><strong>Infosys</strong><span>Digital & Engineering</span></div>
+            <i class="bi bi-arrow-up-right"></i>
+          </div>
+        </article>
+
+        <article class="company-photo-card scroll-card" data-company="Accenture">
+          <div class="company-photo-media">
+            <img src="https://jll-global-gdim-res.cloudinary.com/image/upload/f_auto,dpr_auto,w_1920,q_70/v1654111242/IN_ML20220601/Gigaplex---Building-No-6--Mindspace-Airoli-West-_92569_20220601_001.jpg" alt="Accenture Airoli office" loading="lazy">
+            <div class="photo-overlay"></div>
+            <span class="photo-number">03</span>
+            <span class="photo-city">NAVI MUMBAI / AIROLI</span>
+          </div>
+          <div class="company-photo-meta">
+            <div><strong>Accenture</strong><span>Consulting & Technology</span></div>
+            <i class="bi bi-arrow-up-right"></i>
+          </div>
+        </article>
+
+        <article class="company-photo-card scroll-card" data-company="Capgemini">
+          <div class="company-photo-media">
+            <img src="https://www.capgemini.com/in-en/wp-content/uploads/sites/18/2022/10/IMG-20220923-WA0005.jpg" alt="Capgemini Mumbai office" loading="lazy">
+            <div class="photo-overlay"></div>
+            <span class="photo-number">04</span>
+            <span class="photo-city">MUMBAI / AIROLI</span>
+          </div>
+          <div class="company-photo-meta">
+            <div><strong>Capgemini</strong><span>Engineering & Digital</span></div>
+            <i class="bi bi-arrow-up-right"></i>
+          </div>
+        </article>
+
+        <article class="company-photo-card scroll-card" data-company="Wipro">
+          <div class="company-photo-media">
+            <img src="https://media.glassdoor.com/l/52/91/2a/c5/bangalore-campus.jpg" alt="Wipro Bangalore campus" loading="lazy">
+            <div class="photo-overlay"></div>
+            <span class="photo-number">05</span>
+            <span class="photo-city">BENGALURU / CAMPUS</span>
+          </div>
+          <div class="company-photo-meta">
+            <div><strong>Wipro</strong><span>Technology Services</span></div>
+            <i class="bi bi-arrow-up-right"></i>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FEATURES ===================== -->
+  <section class="section-pad" style="background:var(--primary);">
+    <div class="container">
+      <div class="text-center mb-5 reveal">
+        <div class="section-label">Features</div>
+        <h2 class="section-heading">Everything You Need</h2>
+        <p class="section-subheading mx-auto">Built for students and placement officers — a complete solution for modern campus recruitment.</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4 reveal">
+          <div class="feature-card scroll-card">
+            <div class="feature-icon" style="background:rgba(67,97,238,0.15);color:#4361ee;"><i class="bi bi-check-circle-fill"></i></div>
+            <div class="feature-title">Smart Eligibility Check</div>
+            <div class="feature-desc">Automatic CGPA and branch eligibility verification before allowing any application. No confusion, no wasted time.</div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.05s;">
+          <div class="feature-card scroll-card">
+            <div class="feature-icon" style="background:rgba(76,201,240,0.15);color:#4cc9f0;"><i class="bi bi-lightning-fill"></i></div>
+            <div class="feature-title">Real-Time Status Updates</div>
+            <div class="feature-desc">Application statuses update instantly. Students see every change from Applied to Selected the moment the officer acts.</div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.1s;">
+          <div class="feature-card scroll-card">
+            <div class="feature-icon" style="background:rgba(247,37,133,0.15);color:#f72585;"><i class="bi bi-bar-chart-fill"></i></div>
+            <div class="feature-title">Placement Analytics</div>
+            <div class="feature-desc">Placement cell gets complete analytics — total applications, shortlists, interviews, selections, and branch-wise statistics.</div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.15s;">
+          <div class="feature-card scroll-card">
+            <div class="feature-icon" style="background:rgba(6,214,160,0.15);color:#06d6a0;"><i class="bi bi-building-fill"></i></div>
+            <div class="feature-title">Company Management</div>
+            <div class="feature-desc">Add, edit, and delete company profiles. Associate companies with placement drives and manage all information in one place.</div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.2s;">
+          <div class="feature-card scroll-card">
+            <div class="feature-icon" style="background:rgba(255,209,102,0.15);color:#ffd166;"><i class="bi bi-person-lines-fill"></i></div>
+            <div class="feature-title">Student Profiles</div>
+            <div class="feature-desc">Students maintain complete profiles with academic info, skills, and resume. Editable at any time from the dashboard.</div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-4 reveal" style="transition-delay:0.25s;">
+          <div class="feature-card scroll-card">
+            <div class="feature-icon" style="background:rgba(114,9,183,0.15);color:#7209b7;"><i class="bi bi-shield-check-fill"></i></div>
+            <div class="feature-title">Secure Access Control</div>
+            <div class="feature-desc">Separate portals for students and placement officers. Each user sees only what is relevant to their role.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== CTA ===================== -->
+  <section class="section-pad">
+    <div class="container">
+      <div class="cta-section reveal scroll-card">
+        <div class="cta-content">
+          <div class="section-label mb-3">Get Started Today</div>
+          <h2 class="section-heading mb-3">Ready to Begin Your<br><span style="background:var(--gradient-blue);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Placement Journey?</span></h2>
+          <p class="section-subheading mx-auto mb-5" style="max-width:480px;">
+            Login as a student to explore opportunities, or access the Placement Cell dashboard to manage drives and applications.
+          </p>
+          <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="student-login.html" class="btn-hero-primary magnetic-btn">
+              <i class="bi bi-mortarboard-fill"></i>
+              Student Login
+            </a>
+            <a href="placement-cell/login.html" class="btn-hero-secondary magnetic-btn">
+              <i class="bi bi-shield-lock-fill"></i>
+              Placement Cell Login
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer>
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+          <span class="footer-brand">Smart Placement Portal</span>
+          <span class="footer-text ms-2">© 2024 — College Mini Project</span>
+        </div>
+        <div class="col-md-6 text-center text-md-end">
+          <span class="footer-text">Built with <i class="bi bi-heart-fill" style="color:#ef233c;"></i> using Java Spring Boot + Bootstrap 5</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script>
+    // ---- Initialize data ----
+    initializeData();
+
+    // ---- Particles ----
+    const particleContainer = document.getElementById('particles');
+    for (let i = 0; i < 20; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.animationDuration = (8 + Math.random() * 12) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+      p.style.opacity = (0.3 + Math.random() * 0.7);
+      const colors = ['rgba(67,97,238,0.8)', 'rgba(114,9,183,0.8)', 'rgba(76,201,240,0.8)', 'rgba(247,37,133,0.6)'];
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      particleContainer.appendChild(p);
+    }
+
+    // ---- Scroll Reveal ----
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+
+    // ---- Magnetic / springy CTA motion ----
+    document.querySelectorAll('.magnetic-btn').forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const r = btn.getBoundingClientRect();
+        const x = (e.clientX - (r.left + r.width / 2)) * 0.10;
+        const y = (e.clientY - (r.top + r.height / 2)) * 0.10;
+        btn.style.transform = `translate(${x}px, ${y}px) translateY(-3px) scale(1.02)`;
+      });
+      btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+    });
+
+    // ---- Subtle 3D dashboard tilt ----
+    const heroVisual = document.querySelector('.hero-visual');
+    const dashboard = document.querySelector('.dashboard-preview');
+    if (heroVisual && dashboard && window.matchMedia('(pointer:fine)').matches) {
+      heroVisual.addEventListener('mousemove', (e) => {
+        const r = heroVisual.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - .5;
+        const y = (e.clientY - r.top) / r.height - .5;
+        dashboard.style.transform = `rotateY(${x * 7}deg) rotateX(${y * -5}deg) translateZ(8px)`;
+      });
+      heroVisual.addEventListener('mouseleave', () => { dashboard.style.transform = ''; });
+    }
+
+
+    // ---- Cinematic orbit intro ----
+    const cinematicIntro = document.getElementById('cinematicIntro');
+    const skipIntro = document.getElementById('skipIntro');
+
+    function closeCinematicIntro() {
+      if (!cinematicIntro || cinematicIntro.classList.contains('is-exiting')) return;
+      cinematicIntro.classList.add('is-exiting');
+      setTimeout(() => {
+        cinematicIntro.classList.add('is-hidden');
+        document.body.classList.remove('intro-lock');
+      }, 760);
+    }
+
+    if (cinematicIntro) {
+      document.body.classList.add('intro-lock');
+      setTimeout(closeCinematicIntro, 4700);
+      if (skipIntro) skipIntro.addEventListener('click', closeCinematicIntro);
+      cinematicIntro.addEventListener('click', (e) => {
+        if (e.target === cinematicIntro) closeCinematicIntro();
+      });
+    }
+
+    // Company photo cards respond to scroll depth for a premium editorial feel
+    const photoCards = [...document.querySelectorAll('.company-photo-card')];
+    function animatePhotoCards() {
+      photoCards.forEach((card, i) => {
+        const r = card.getBoundingClientRect();
+        const viewportCenter = window.innerHeight * 0.54;
+        const d = (r.top + r.height / 2 - viewportCenter) / window.innerHeight;
+        const clamped = Math.max(-.8, Math.min(.8, d));
+        card.style.setProperty('--photo-shift', `${-clamped * 18}px`);
+        card.style.setProperty('--photo-rotate', `${clamped * (i % 2 ? 1.8 : -1.8)}deg`);
+        card.style.transform = `translateY(${clamped * -18}px) rotate(${clamped * (i % 2 ? 1.8 : -1.8)}deg)`;
+      });
+    }
+    window.addEventListener('scroll', animatePhotoCards, {passive:true});
+    animatePhotoCards();
+
+    // ---- Cinematic scroll system ----
+    const scrollProgress = document.getElementById('scrollProgress');
+    const cursorGlow = document.getElementById('cursorGlow');
+    const backdrop = document.querySelector('.tech-backdrop');
+    const scrollSections = [...document.querySelectorAll('section')];
+    let ticking = false;
+
+    function cinematicScroll() {
+      const scrollTop = window.scrollY || window.pageYOffset;
+      const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      const progress = Math.min(100, Math.max(0, scrollTop / maxScroll * 100));
+      scrollProgress.style.width = progress + '%';
+      document.documentElement.style.setProperty('--scroll-y', scrollTop);
+
+      scrollSections.forEach((section, index) => {
+        const rect = section.getBoundingClientRect();
+        const center = rect.top + rect.height / 2;
+        const distance = (center - window.innerHeight / 2) / (window.innerHeight / 2);
+        const influence = Math.max(-1, Math.min(1, distance));
+        section.style.setProperty('--scene-x', (50 + influence * 28) + '%');
+        section.style.setProperty('--scene-y', (50 - influence * 18) + '%');
+
+        section.querySelectorAll('.scroll-float').forEach((el, i) => {
+          const amount = Math.max(-16, Math.min(16, influence * -12 + i * 1.5));
+          el.style.setProperty('--float-y', amount + 'px');
+          el.style.setProperty('--float-scale', (1 - Math.abs(influence) * .018).toFixed(3));
+        });
+
+        section.querySelectorAll('.scroll-card').forEach((el, i) => {
+          const lift = Math.max(-7, Math.min(7, -influence * 5));
+          const rx = Math.max(-2.5, Math.min(2.5, influence * -2.2));
+          const ry = Math.max(-2.5, Math.min(2.5, influence * 1.5));
+          el.style.setProperty('--lift', lift + 'px');
+          el.style.setProperty('--rx', rx + 'deg');
+          el.style.setProperty('--ry', ry + 'deg');
+        });
+      });
+
+      document.body.classList.add('is-scrolling');
+      clearTimeout(window.__scrollStop);
+      window.__scrollStop = setTimeout(() => document.body.classList.remove('is-scrolling'), 120);
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        requestAnimationFrame(cinematicScroll);
+        ticking = true;
+      }
+    }, { passive: true });
+    cinematicScroll();
+
+    // ---- Mouse light follows the pointer ----
+    window.addEventListener('pointermove', (e) => {
+      if (window.matchMedia('(pointer:fine)').matches) {
+        cursorGlow.style.left = e.clientX + 'px';
+        cursorGlow.style.top = e.clientY + 'px';
+      }
+    }, { passive: true });
+
+
+
+    // ---- Scroll-driven cinematic story ----
+    const story = document.getElementById('scrollStory');
+    const storyScenes = [...document.querySelectorAll('.story-scene')];
+    const storyDots = [...document.querySelectorAll('.story-dot')];
+    const storyLightOne = document.querySelector('.story-light.one');
+    const storyLightTwo = document.querySelector('.story-light.two');
+    let storyTick = false;
+
+    function updateCinematicStory() {
+      if (!story) return;
+      const rect = story.getBoundingClientRect();
+      const total = Math.max(1, story.offsetHeight - window.innerHeight);
+      const local = Math.min(total, Math.max(0, -rect.top));
+      const p = local / total;
+      const index = Math.min(storyScenes.length - 1, Math.floor(p * storyScenes.length));
+      const sceneProgress = (p * storyScenes.length) - index;
+
+      storyScenes.forEach((scene, i) => {
+        scene.classList.toggle('active', i === index);
+        if (i === index) {
+          const visual = scene.querySelector('.scene-visual');
+          if (visual) {
+            const x = (sceneProgress - .5) * -24;
+            const y = Math.sin(sceneProgress * Math.PI) * -16;
+            const scale = 1 + Math.sin(sceneProgress * Math.PI) * .025;
+            visual.style.transform = `translate3d(${x}px,${y}px,0) scale(${scale}) rotateY(${(sceneProgress-.5)*10}deg)`;
+          }
+        }
+      });
+      storyDots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+      if (storyLightOne) storyLightOne.style.transform = `translate(${Math.sin(p*Math.PI*2)*18}vw,${Math.cos(p*Math.PI*2)*10}vh) scale(${1+p*.25})`;
+      if (storyLightTwo) storyLightTwo.style.transform = `translate(${Math.cos(p*Math.PI*2)*14}vw,${Math.sin(p*Math.PI*2)*12}vh) scale(${1.1+p*.2})`;
+      story.style.setProperty('--story-progress', p.toFixed(3));
+      storyTick = false;
+    }
+    window.addEventListener('scroll', () => {
+      if (!storyTick) { requestAnimationFrame(updateCinematicStory); storyTick = true; }
+    }, {passive:true});
+    updateCinematicStory();
+
+    // ---- Animated Stats Counters ----
+    function animateNum(el, target, suffix = '') {
+      let current = 0;
+      const step = target / 60;
+      const timer = setInterval(() => {
+        current += step;
+        if (current >= target) {
+          el.innerHTML = target + suffix;
+          clearInterval(timer);
+        } else {
+          el.textContent = Math.floor(current);
+        }
+      }, 25);
+    }
+
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          animateNum(document.getElementById('stat1'), 500, '+');
+          animateNum(document.getElementById('stat2'), 50, '+');
+          // stat3 has % inside
+          let n3 = 0;
+          const el3 = document.getElementById('stat3');
+          const t3 = setInterval(() => {
+            n3 += 1.5;
+            if (n3 >= 85) { el3.innerHTML = '85<span style="-webkit-text-fill-color:#4cc9f0;">%</span>'; clearInterval(t3); }
+            else el3.textContent = Math.floor(n3);
+          }, 25);
+          // stat4 has LPA
+          let n4 = 0;
+          const el4 = document.getElementById('stat4');
+          const t4 = setInterval(() => {
+            n4 += 0.18;
+            if (n4 >= 10) { el4.innerHTML = '10<span style="font-size:1.5rem;-webkit-text-fill-color:#06d6a0;"> LPA</span>'; clearInterval(t4); }
+            else el4.textContent = n4.toFixed(1);
+          }, 25);
+          statsObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    statsObserver.observe(document.querySelector('.stats-section'));
+  </script>
+</body>
+</html>

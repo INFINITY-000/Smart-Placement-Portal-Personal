@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Students | Smart Placement Portal</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: #080b16;
+            color: #f1f5f9;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            padding: 25px 15px;
+            background: rgba(13,18,35,0.96);
+            border-right: 1px solid rgba(255,255,255,0.08);
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            padding: 0 12px 20px;
+        }
+
+        .logo span {
+            color: #7c3aed;
+        }
+
+        .portal-label {
+            padding: 0 12px 15px;
+            color: #64748b;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            padding: 13px 15px;
+            margin: 5px 0;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: linear-gradient(90deg, #6d28d9, #4f46e5);
+            color: white;
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 25px;
+            left: 15px;
+            right: 15px;
+            color: #f87171;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 250px;
+            padding: 35px;
+        }
+
+        .page-title {
+            font-size: 30px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-top: 6px;
+            margin-bottom: 30px;
+        }
+
+        /* STATS */
+
+        .stat-card {
+            background: rgba(20,27,49,0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 20px;
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(124,58,237,0.45);
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(124,58,237,0.15);
+            color: #a78bfa;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .stat-number {
+            font-size: 27px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 13px;
+        }
+
+        /* SEARCH */
+
+        .filter-card {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(20,27,49,0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+        }
+
+        .form-control,
+        .form-select {
+            background: #0f172a;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 11px 13px;
+            border-radius: 10px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            background: #0f172a;
+            color: white;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+        }
+
+        .form-control::placeholder {
+            color: #64748b;
+        }
+
+        .form-select option {
+            background: #0f172a;
+            color: white;
+        }
+
+        /* TABLE */
+
+        .table-card {
+            margin-top: 25px;
+            background: rgba(20,27,49,0.75);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .table-title {
+            padding: 22px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .table {
+            color: #e2e8f0;
+            margin: 0;
+        }
+
+        .table th {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 16px;
+            border-color: rgba(255,255,255,0.08);
+            white-space: nowrap;
+        }
+
+        .table td {
+            padding: 17px 16px;
+            border-color: rgba(255,255,255,0.06);
+            vertical-align: middle;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-avatar {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .student-name {
+            font-weight: 600;
+        }
+
+        .student-email {
+            color: #64748b;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .cgpa {
+            color: #4ade80;
+            font-weight: 700;
+        }
+
+        .branch {
+            color: #cbd5e1;
+        }
+
+        .status {
+            padding: 6px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: rgba(34,197,94,0.12);
+            color: #4ade80;
+        }
+
+        .status-placed {
+            background: rgba(124,58,237,0.15);
+            color: #c4b5fd;
+        }
+
+        .status-applied {
+            background: rgba(59,130,246,0.15);
+            color: #60a5fa;
+        }
+
+        .view-btn {
+            border: 1px solid rgba(124,58,237,0.4);
+            background: rgba(124,58,237,0.1);
+            color: #c4b5fd;
+            padding: 7px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .view-btn:hover {
+            background: rgba(124,58,237,0.2);
+            color: white;
+        }
+
+        /* MODAL */
+
+        .modal-content {
+            background: #111827;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .btn-close {
+            filter: invert(1);
+        }
+
+        .profile-box {
+            background: rgba(15,23,42,0.7);
+            padding: 20px;
+            border-radius: 14px;
+        }
+
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .profile-row:last-child {
+            border-bottom: none;
+        }
+
+        .profile-label {
+            color: #94a3b8;
+        }
+
+        .profile-value {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* EMPTY */
+
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty i {
+            display: block;
+            font-size: 50px;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        .empty h4 {
+            color: #e2e8f0;
+        }
+
+        /* MOBILE */
+
+        @media(max-width:700px) {
+
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .logout {
+                position: static;
+                margin-top: 10px;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+        }
+
+    </style>
+
+<script src="../js/company-config.js"></script>
+    <script src="../js/api.js"></script>
+</head>
+
+<body>
+
+
+<!-- SIDEBAR -->
+
+<div class="sidebar">
+
+    <div class="logo">
+        Smart<span>Placement</span>
+    </div>
+
+    <div class="portal-label">
+        Placement Cell
+    </div>
+
+    <a href="dashboard.html" class="nav-link">
+        <i class="bi bi-grid-1x2-fill"></i>
+        Dashboard
+    </a>
+
+    <a href="companies.html" class="nav-link">
+        <i class="bi bi-buildings-fill"></i>
+        Companies
+    </a>
+
+    <a href="drives.html" class="nav-link">
+        <i class="bi bi-briefcase-fill"></i>
+        Placement Drives
+    </a>
+
+    <a href="students.html" class="nav-link active">
+        <i class="bi bi-people-fill"></i>
+        Students
+    </a>
+
+    <a href="applications.html" class="nav-link">
+        <i class="bi bi-file-earmark-text-fill"></i>
+        Applications
+    </a>
+
+    <a href="../index.html" class="nav-link">
+        <i class="bi bi-house-fill"></i>
+        Home
+    </a>
+
+    <a
+        href="#"
+        class="nav-link logout"
+        onclick="logout()">
+
+        <i class="bi bi-box-arrow-left"></i>
+        Logout
+
+    </a>
+
+</div>
+
+
+<!-- MAIN -->
+
+<div class="main">
+
+    <h1 class="page-title">
+        Students
+    </h1>
+
+    <p class="subtitle">
+        Manage registered students and review their placement profiles.
+    </p>
+
+
+    <!-- STATS -->
+
+    <div class="row g-4">
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="totalStudents">
+
+                    0
+
+                </div>
+
+                <div class="stat-label">
+                    Total Students
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="bi bi-person-check-fill"></i>
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="availableStudents">
+
+                    0
+
+                </div>
+
+                <div class="stat-label">
+                    Available for Placement
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="bi bi-send-fill"></i>
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="appliedStudents">
+
+                    0
+
+                </div>
+
+                <div class="stat-label">
+                    Applied to Drives
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+
+            <div class="stat-card">
+
+                <div class="stat-icon">
+                    <i class="bi bi-trophy-fill"></i>
+                </div>
+
+                <div
+                    class="stat-number"
+                    id="placedStudents">
+
+                    0
+
+                </div>
+
+                <div class="stat-label">
+                    Placed Students
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="filter-card">
+
+        <div class="row g-3">
+
+            <div class="col-md-6">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="form-control"
+                    placeholder="Search student name, email or branch..."
+                    oninput="filterStudents()">
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <select
+                    id="branchFilter"
+                    class="form-select"
+                    onchange="filterStudents()">
+
+                    <option value="">
+                        All Branches
+                    </option>
+
+                    <option value="Computer Engineering">
+                        Computer Engineering
+                    </option>
+
+                    <option value="AI & Data Science">
+                        AI & Data Science
+                    </option>
+
+                    <option value="Information Technology">
+                        Information Technology
+                    </option>
+
+                    <option value="Electronics & Telecommunication">
+                        Electronics & Telecommunication
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <select
+                    id="statusFilter"
+                    class="form-select"
+                    onchange="filterStudents()">
+
+                    <option value="">
+                        All Status
+                    </option>
+
+                    <option value="Available">
+                        Available
+                    </option>
+
+                    <option value="Applied">
+                        Applied
+                    </option>
+
+                    <option value="Placed">
+                        Placed
+                    </option>
+
+                </select>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- TABLE -->
+
+    <div class="table-card">
+
+        <div class="table-title">
+
+            <i class="bi bi-people-fill me-2"></i>
+
+            Registered Students
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Student
+                        </th>
+
+                        <th>
+                            Branch
+                        </th>
+
+                        <th>
+                            Year
+                        </th>
+
+                        <th>
+                            CGPA
+                        </th>
+
+                        <th>
+                            Skills
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="studentTable">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- PROFILE MODAL -->
+
+<div
+    class="modal fade"
+    id="studentModal"
+    tabindex="-1">
+
+    <div class="modal-dialog modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h5 class="modal-title">
+
+                    <i class="bi bi-person-vcard-fill me-2"></i>
+
+                    Student Profile
+
+                </h5>
+
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal">
+                </button>
+
+            </div>
+
+
+            <div class="modal-body">
+
+                <div
+                    class="profile-box"
+                    id="profileDetails">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script
+src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">
+</script>
+
+
+<script>
+let students=[];let applications=[];
+async function loadStudents(){students=await apiRequest('/students');applications=await apiRequest('/applications');students=students.map(s=>{const a=applications.filter(x=>x.studentId===s.id);const selected=a.some(x=>x.status==='Selected');const applied=a.length>0;return {...s,status:selected?'Placed':applied?'Applied':'Available'};});updateStats();filterStudents();}
+function displayStudents(list){const table=document.getElementById('studentTable');if(!list.length){table.innerHTML='<tr><td colspan="7" class="text-center"><div class="empty"><i class="bi bi-person-x"></i><h4>No Students Found</h4><p>Try changing your search or filters.</p></div></td></tr>';return;}table.innerHTML=list.map(student=>{const initials=student.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();const cls=student.status==='Applied'?'status-applied':student.status==='Placed'?'status-placed':'status-available';return `<tr><td><div class="student-info"><div class="student-avatar">${initials}</div><div><div class="student-name">${student.name}</div><div class="student-email">${student.email}</div></div></div></td><td><span class="branch">${student.branch||'—'}</span></td><td>${student.year||'—'}</td><td><span class="cgpa">${student.cgpa||'—'}</span></td><td><small>${student.skills||'—'}</small></td><td><span class="status ${cls}">${student.status}</span></td><td><button class="view-btn" onclick="viewStudent(${student.id})"><i class="bi bi-eye me-1"></i>View</button></td></tr>`;}).join('');}
+function filterStudents(){const search=document.getElementById('searchInput').value.toLowerCase().trim();const branch=document.getElementById('branchFilter').value;const status=document.getElementById('statusFilter').value;displayStudents(students.filter(s=>(s.name.toLowerCase().includes(search)||s.email.toLowerCase().includes(search)||(s.branch||'').toLowerCase().includes(search))&&(!branch||s.branch===branch)&&(!status||s.status===status)));}
+function viewStudent(id){const s=students.find(x=>x.id===id);if(!s)return;document.getElementById('profileDetails').innerHTML=`<div class="text-center mb-4"><div class="student-avatar mx-auto mb-3" style="width:70px;height:70px;font-size:22px">${s.name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}</div><h4>${s.name}</h4><small class="text-secondary">${s.email}</small></div><div class="profile-row"><span class="profile-label">Phone</span><span class="profile-value">${s.phone||'—'}</span></div><div class="profile-row"><span class="profile-label">Branch</span><span class="profile-value">${s.branch||'—'}</span></div><div class="profile-row"><span class="profile-label">Academic Year</span><span class="profile-value">${s.year||'—'}</span></div><div class="profile-row"><span class="profile-label">CGPA</span><span class="profile-value" style="color:#4ade80">${s.cgpa||'—'}</span></div><div class="profile-row"><span class="profile-label">Skills</span><span class="profile-value">${s.skills||'—'}</span></div><div class="profile-row"><span class="profile-label">Placement Status</span><span class="profile-value">${s.status}</span></div>`;new bootstrap.Modal(document.getElementById('studentModal')).show();}
+function updateStats(){document.getElementById('totalStudents').textContent=students.length;document.getElementById('availableStudents').textContent=students.filter(s=>s.status==='Available').length;document.getElementById('appliedStudents').textContent=students.filter(s=>s.status==='Applied').length;document.getElementById('placedStudents').textContent=students.filter(s=>s.status==='Placed').length;}
+function logout(){clearSession();window.location.href='login.html';}
+loadStudents().catch(e=>alert('Could not load students. Start the Spring Boot server first.\n\n'+e.message));
+</script>
+
+</body>
+</html>

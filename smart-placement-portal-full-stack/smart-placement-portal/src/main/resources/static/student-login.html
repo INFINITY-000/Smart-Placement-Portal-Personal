@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Login | Smart Placement Portal</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+        rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at 20% 20%, #17245f 0%, transparent 35%),
+                radial-gradient(circle at 80% 80%, #42135f 0%, transparent 35%),
+                #080a1a;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 1050px;
+            padding: 25px;
+        }
+
+        .login-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 600px;
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 28px;
+            overflow: hidden;
+            background: rgba(255,255,255,.05);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 30px 80px rgba(0,0,0,.45);
+            animation: slideUp .7s ease;
+        }
+
+        .brand-side {
+            padding: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: linear-gradient(
+                145deg,
+                rgba(67,97,238,.25),
+                rgba(114,32,183,.18)
+            );
+        }
+
+        .logo {
+            width: 58px;
+            height: 58px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg,#4361ee,#7209b7);
+            font-size: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(67,97,238,.35);
+        }
+
+        .brand-side h1 {
+            font-size: 42px;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 20px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg,#4cc9f0,#7209b7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-side p {
+            color: #aab0c8;
+            font-size: 16px;
+            line-height: 1.7;
+            max-width: 430px;
+        }
+
+        .feature {
+            margin-top: 30px;
+        }
+
+        .feature-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin: 14px 0;
+            color: #c9cce0;
+        }
+
+        .feature-item i {
+            color: #4cc9f0;
+        }
+
+        .form-side {
+            padding: 55px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background: rgba(5,7,20,.35);
+        }
+
+        .form-side h2 {
+            font-size: 32px;
+            font-weight: 750;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #8992b0;
+            margin-bottom: 30px;
+        }
+
+        .form-label {
+            color: #cfd3e6;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            height: 52px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.06);
+            color: white;
+            padding: 0 16px;
+        }
+
+        .form-control:focus {
+            background: rgba(255,255,255,.08);
+            color: white;
+            border-color: #4361ee;
+            box-shadow: 0 0 0 4px rgba(67,97,238,.15);
+        }
+
+        .form-control::placeholder {
+            color: #69718d;
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 52px;
+            border: 0;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg,#4361ee,#7209b7);
+            box-shadow: 0 10px 25px rgba(67,97,238,.25);
+            transition: .25s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(67,97,238,.4);
+        }
+
+        .demo-box {
+            margin-top: 22px;
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(76,201,240,.07);
+            border: 1px solid rgba(76,201,240,.15);
+            color: #9ea7c4;
+            font-size: 13px;
+        }
+
+        .demo-box strong {
+            color: #4cc9f0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: #8992b0;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .back-link:hover {
+            color: #4cc9f0;
+        }
+
+        .error-message {
+            display: none;
+            color: #ff6b81;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media(max-width: 800px) {
+            .login-card {
+                grid-template-columns: 1fr;
+            }
+
+            .brand-side {
+                display: none;
+            }
+
+            .form-side {
+                padding: 35px 25px;
+            }
+        }
+    </style>
+<script src="js/company-config.js"></script>
+    <script src="js/api.js"></script>
+</head>
+
+<body>
+
+<div class="login-wrapper">
+
+    <div class="login-card">
+
+        <!-- LEFT SIDE -->
+
+        <div class="brand-side">
+
+            <div class="logo">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+
+            <h1>
+                Welcome Back,<br>
+                <span class="gradient-text">Student.</span>
+            </h1>
+
+            <p>
+                Access your placement opportunities, track applications,
+                and take the next step toward your career.
+            </p>
+
+            <div class="feature">
+
+                <div class="feature-item">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Explore placement opportunities
+                </div>
+
+                <div class="feature-item">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Apply to eligible companies
+                </div>
+
+                <div class="feature-item">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Track application status
+                </div>
+
+                <div class="feature-item">
+                    <i class="bi bi-check-circle-fill"></i>
+                    Manage your placement profile
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RIGHT SIDE -->
+
+        <div class="form-side">
+
+            <h2>Student Login</h2>
+
+            <p class="subtitle">
+                Sign in to access your placement dashboard.
+            </p>
+
+            <form id="loginForm">
+
+                <div class="mb-3">
+
+                    <label class="form-label">
+                        Email Address
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        class="form-control"
+                        placeholder="Enter your email"
+                        required>
+
+                </div>
+
+
+                <div class="mb-4">
+
+                    <label class="form-label">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        class="form-control"
+                        placeholder="Enter your password"
+                        required>
+
+                </div>
+
+
+                <button class="login-btn" type="submit">
+
+                    <i class="bi bi-box-arrow-in-right me-2"></i>
+
+                    Sign In
+
+                </button>
+
+                <div id="errorMessage" class="error-message">
+                    Invalid email or password.
+                </div>
+
+            </form>
+
+
+            <div class="demo-box">
+
+                <strong>Demo Account</strong><br>
+
+                Email: omyadav@gmail.com<br>
+
+                Password: student123
+
+            </div>
+
+
+            <a href="index.html" class="back-link">
+
+                <i class="bi bi-arrow-left me-1"></i>
+
+                Back to Home
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const error = document.getElementById("errorMessage");
+    error.style.display = "none";
+    try {
+        const user = await apiRequest("/auth/student/login", {method:"POST", body:JSON.stringify({email,password})});
+        saveSession(user);
+        window.location.href = "student/dashboard.html";
+    } catch (err) { error.textContent = err.message; error.style.display = "block"; }
+});
+</script>
+
+</body>
+</html>

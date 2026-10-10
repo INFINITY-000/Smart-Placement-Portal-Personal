@@ -1,0 +1,315 @@
+/* =====================================================================
+   login.css — Login Page Styles
+   ===================================================================== */
+
+/* ---- BODY ---- */
+body.login-page {
+  background: var(--primary-dark);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   ANIMATED BACKGROUND
+   ============================================================ */
+.login-bg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 70% 55% at 15% 45%, rgba(67,97,238,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 50% at 85% 20%, rgba(114,9,183,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 45% 40% at 65% 85%, rgba(76,201,240,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+.login-bg .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  animation: float 6s ease-in-out infinite;
+  pointer-events: none;
+}
+.orb-1 {
+  width: 420px; height: 420px;
+  background: rgba(67, 97, 238, 0.2);
+  top: -120px; left: -120px;
+  animation-delay: 0s;
+}
+.orb-2 {
+  width: 320px; height: 320px;
+  background: rgba(114, 9, 183, 0.2);
+  bottom: -90px; right: -90px;
+  animation-delay: 2s;
+}
+.orb-3 {
+  width: 200px; height: 200px;
+  background: rgba(76, 201, 240, 0.15);
+  top: 38%; right: 12%;
+  animation-delay: 4s;
+}
+
+/* ============================================================
+   LOGIN WRAPPER
+   ============================================================ */
+.login-wrapper {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+/* ============================================================
+   LOGIN CARD
+   ============================================================ */
+.login-card {
+  width: 100%;
+  max-width: 430px;
+  background: rgba(22, 33, 62, 0.82);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 38px;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(67, 97, 238, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  animation: fadeIn 0.6s ease;
+}
+
+/* ============================================================
+   LOGIN LOGO
+   ============================================================ */
+.login-logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.login-logo .logo-icon {
+  width: 64px; height: 64px;
+  border-radius: 18px;
+  background: var(--gradient-blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  color: white;
+  margin: 0 auto 16px;
+  box-shadow: 0 8px 26px rgba(67, 97, 238, 0.45);
+  animation: float 3s ease-in-out infinite;
+}
+.login-logo h1 {
+  font-size: 1.45rem;
+  font-weight: 800;
+  background: var(--gradient-blue);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 5px;
+  line-height: 1.2;
+}
+.login-logo .portal-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(67, 97, 238, 0.12);
+  border: 1px solid rgba(67, 97, 238, 0.25);
+  color: #7b9fff;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* ============================================================
+   LOGIN FORM
+   ============================================================ */
+.form-group { margin-bottom: 18px; }
+
+.input-group-custom { position: relative; }
+.input-group-custom .input-icon {
+  position: absolute;
+  left: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1rem;
+  pointer-events: none;
+}
+.input-group-custom input {
+  padding-left: 40px;
+  width: 100%;
+}
+.input-group-custom .toggle-password {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+.input-group-custom .toggle-password:hover { color: var(--blue); }
+
+/* ============================================================
+   LOGIN BUTTON
+   ============================================================ */
+.btn-login {
+  width: 100%;
+  padding: 13px;
+  background: var(--gradient-blue);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(67, 97, 238, 0.55);
+}
+.btn-login:active { transform: translateY(0); }
+.btn-login:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none;
+}
+/* Shimmer on hover */
+.btn-login::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  transition: left 0.4s ease;
+}
+.btn-login:hover::before { left: 100%; }
+
+/* ============================================================
+   DEMO CREDENTIALS BOX
+   ============================================================ */
+.demo-creds {
+  background: rgba(67, 97, 238, 0.08);
+  border: 1px solid rgba(67, 97, 238, 0.2);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-top: 22px;
+}
+.demo-creds-title {
+  font-size: 0.73rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.demo-creds-title i { color: var(--blue); }
+.demo-creds-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 0.82rem;
+}
+.demo-creds-row:last-child { margin-bottom: 0; }
+.demo-creds-row .label { color: var(--text-muted); }
+.demo-creds-row code {
+  color: var(--cyan);
+  background: rgba(76, 201, 240, 0.1);
+  padding: 2px 9px;
+  border-radius: 5px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  border: 1px solid rgba(76, 201, 240, 0.15);
+  transition: background 0.2s;
+}
+.demo-creds-row code:hover { background: rgba(76, 201, 240, 0.2); }
+
+/* ============================================================
+   ALERT / ERROR
+   ============================================================ */
+.alert-custom {
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 0.85rem;
+  border: none;
+  margin-bottom: 16px;
+  display: none;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.3s ease;
+}
+.alert-error {
+  background: rgba(239, 35, 60, 0.14);
+  border-left: 3px solid #ef233c;
+  color: #ff7a8a;
+}
+.alert-success {
+  background: rgba(6, 214, 160, 0.14);
+  border-left: 3px solid #06d6a0;
+  color: #06d6a0;
+}
+
+/* ============================================================
+   BACK LINK
+   ============================================================ */
+.back-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 0.83rem;
+  text-decoration: none;
+  margin-top: 22px;
+  justify-content: center;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--text-light); }
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--card-border);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px) {
+  .login-card { padding: 26px 22px; }
+  .login-logo .logo-icon { width: 54px; height: 54px; font-size: 1.4rem; }
+  .login-logo h1 { font-size: 1.25rem; }
+}

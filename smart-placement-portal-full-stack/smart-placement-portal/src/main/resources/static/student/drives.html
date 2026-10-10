@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Placement Drives | Smart Placement Portal</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css"
+        rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --dark: #080a1a;
+            --sidebar: #0d1025;
+            --card: rgba(255,255,255,.055);
+            --border: rgba(255,255,255,.10);
+            --blue: #4361ee;
+            --purple: #7209b7;
+            --cyan: #4cc9f0;
+            --green: #06d6a0;
+            --text: #eef0ff;
+            --muted: #8992b0;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(
+                    circle at 85% 10%,
+                    rgba(114,9,183,.18),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 20% 80%,
+                    rgba(67,97,238,.12),
+                    transparent 30%
+                ),
+                var(--dark);
+            color: var(--text);
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 255px;
+            background: rgba(13,16,37,.97);
+            border-right: 1px solid var(--border);
+            padding: 22px 15px;
+            z-index: 1000;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px 25px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 22px;
+        }
+
+        .brand-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: linear-gradient(135deg,var(--blue),var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-name {
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+        .brand-sub {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .nav-title {
+            color: #606984;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 0 12px;
+            margin: 20px 0 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 12px 14px;
+            margin-bottom: 4px;
+            border-radius: 11px;
+            color: var(--muted);
+            text-decoration: none;
+            transition: .25s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            background: linear-gradient(
+                90deg,
+                rgba(67,97,238,.22),
+                rgba(114,9,183,.12)
+            );
+        }
+
+        .nav-link.active {
+            border-left: 3px solid var(--cyan);
+        }
+
+        .logout {
+            position: absolute;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 255px;
+            padding: 35px 40px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .heading h1 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .heading p {
+            color: var(--muted);
+            margin: 0;
+        }
+
+        .avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg,var(--blue),var(--purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+
+        /* SEARCH */
+
+        .search-area {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 17px;
+            top: 16px;
+            color: var(--muted);
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 52px;
+            padding: 0 20px 0 47px;
+            border-radius: 13px;
+            border: 1px solid var(--border);
+            outline: none;
+            background: var(--card);
+            color: white;
+        }
+
+        .search-box input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 4px rgba(67,97,238,.12);
+        }
+
+        .filter {
+            height: 52px;
+            padding: 0 18px;
+            border-radius: 13px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: #cfd3e6;
+            outline: none;
+        }
+
+        .filter option {
+            background: #11152c;
+        }
+
+        /* DRIVE CARDS */
+
+        .drive-card {
+            height: 100%;
+            padding: 24px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--card);
+            transition: .3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .drive-card::before {
+            content: "";
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            right: -100px;
+            top: -100px;
+            background: rgba(67,97,238,.13);
+            border-radius: 50%;
+        }
+
+        .drive-card:hover {
+            transform: translateY(-7px);
+            border-color: rgba(76,201,240,.35);
+            box-shadow: 0 20px 45px rgba(0,0,0,.28);
+        }
+
+        .company-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .company-logo {
+            width: 52px;
+            height: 52px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 16px;
+            background: linear-gradient(135deg,var(--blue),var(--purple));
+        }
+
+        .badge-open {
+            padding: 6px 10px;
+            border-radius: 20px;
+            background: rgba(6,214,160,.12);
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .company-name {
+            font-size: 19px;
+            font-weight: 750;
+            margin-bottom: 3px;
+        }
+
+        .role {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .package {
+            font-size: 23px;
+            font-weight: 800;
+            color: var(--green);
+            margin: 18px 0;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .detail {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .detail i {
+            color: var(--cyan);
+            margin-right: 5px;
+        }
+
+        .deadline {
+            padding: 10px 12px;
+            border-radius: 10px;
+            background: rgba(247,37,133,.07);
+            color: #e7a4bc;
+            font-size: 12px;
+            margin-bottom: 18px;
+        }
+
+        .deadline i {
+            color: #f72585;
+        }
+
+        .apply-btn {
+            width: 100%;
+            border: none;
+            border-radius: 11px;
+            padding: 11px;
+            color: white;
+            font-weight: 700;
+            background: linear-gradient(135deg,var(--blue),var(--purple));
+            transition: .25s;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(67,97,238,.35);
+        }
+
+        .applied {
+            background: rgba(6,214,160,.13);
+            color: var(--green);
+        }
+
+        /* EMPTY RESULT */
+
+        #noResults {
+            display: none;
+            text-align: center;
+            padding: 70px 20px;
+            color: var(--muted);
+        }
+
+        #noResults i {
+            font-size: 45px;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width:900px) {
+            .sidebar {
+                width: 75px;
+            }
+
+            .brand-name,
+            .brand-sub,
+            .nav-link span,
+            .nav-title {
+                display: none;
+            }
+
+            .brand {
+                justify-content: center;
+            }
+
+            .nav-link {
+                justify-content: center;
+            }
+
+            .main {
+                margin-left: 75px;
+                padding: 25px;
+            }
+        }
+
+        @media(max-width:600px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .heading h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+<script src="../js/company-config.js"></script>
+    <script src="../js/api.js"></script>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            <i class="bi bi-mortarboard-fill"></i>
+        </div>
+
+        <div>
+            <div class="brand-name">Smart Placement</div>
+            <div class="brand-sub">Student Portal</div>
+        </div>
+
+    </div>
+
+    <div class="nav-title">Main Menu</div>
+
+    <a href="dashboard.html" class="nav-link">
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>Dashboard</span>
+    </a>
+
+    <a href="profile.html" class="nav-link">
+        <i class="bi bi-person-fill"></i>
+        <span>My Profile</span>
+    </a>
+
+    <a href="drives.html" class="nav-link active">
+        <i class="bi bi-briefcase-fill"></i>
+        <span>Placement Drives</span>
+    </a>
+
+    <a href="applications.html" class="nav-link">
+        <i class="bi bi-file-earmark-text-fill"></i>
+        <span>My Applications</span>
+    </a>
+
+    <a href="history.html" class="nav-link">
+        <i class="bi bi-trophy-fill"></i>
+        <span>Placement History</span>
+    </a>
+
+    <div class="nav-title">Account</div>
+
+    <a href="../index.html" class="nav-link">
+        <i class="bi bi-house-fill"></i>
+        <span>Home</span>
+    </a>
+
+    <div class="logout">
+
+        <a href="../student-login.html"
+           onclick="logout()"
+           class="nav-link">
+
+            <i class="bi bi-box-arrow-left"></i>
+            <span>Logout</span>
+
+        </a>
+
+    </div>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+    <div class="topbar">
+
+        <div class="heading">
+
+            <h1>Placement Drives</h1>
+
+            <p>
+                Discover companies and apply for opportunities that match your profile.
+            </p>
+
+        </div>
+
+        <div class="avatar">
+            R
+        </div>
+
+    </div>
+
+
+    <!-- SEARCH -->
+
+    <div class="search-area">
+
+        <div class="search-box">
+
+            <i class="bi bi-search"></i>
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="Search company, role or location..."
+                onkeyup="filterDrives()">
+
+        </div>
+
+        <select
+            class="filter"
+            id="roleFilter"
+            onchange="filterDrives()">
+
+            <option value="all">All Roles</option>
+            <option value="developer">Developer</option>
+            <option value="analyst">Analyst</option>
+            <option value="ai">AI / ML</option>
+            <option value="intern">Internship</option>
+
+        </select>
+
+    </div>
+
+
+    <!-- DRIVE COUNT -->
+
+    <p style="color:#8992b0;font-size:13px;margin-bottom:18px;">
+        <span id="driveCount">6</span> placement opportunities available
+    </p>
+
+
+    <!-- DRIVES -->
+
+    <div class="row g-4" id="driveContainer">
+
+
+        <!-- TECHNOVA -->
+
+        <div class="col-lg-4 col-md-6 drive-item"
+             data-search="technova java developer mumbai developer"
+             data-role="developer">
+
+            <div class="drive-card">
+
+                <div class="company-row">
+
+                    <div class="company-logo">
+                        TN
+                    </div>
+
+                    <span class="badge-open">
+                        Open
+                    </span>
+
+                </div>
+
+                <div class="company-name">
+                    TCS
+                </div>
+
+                <div class="role">
+                    Java Developer
+                </div>
+
+                <div class="package">
+                    ₹8 LPA
+                </div>
+
+                <div class="details">
+
+                    <div class="detail">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        Mumbai
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-mortarboard-fill"></i>
+                        7.0 CGPA
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-briefcase-fill"></i>
+                        Full Time
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-code-slash"></i>
+                        Java
+                    </div>
+
+                </div>
+
+                <div class="deadline">
+                    <i class="bi bi-clock-fill"></i>
+                    Apply before 10 Oct 2026
+                </div>
+
+                <button class="apply-btn"
+                        onclick="apply(this,'TCS','Java Developer','₹8 LPA')">
+                    Apply Now
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- DATAMIND -->
+
+        <div class="col-lg-4 col-md-6 drive-item"
+             data-search="datamind data analyst pune analyst"
+             data-role="analyst">
+
+            <div class="drive-card">
+
+                <div class="company-row">
+
+                    <div class="company-logo"
+                         style="background:linear-gradient(135deg,#7209b7,#f72585)">
+                        DM
+                    </div>
+
+                    <span class="badge-open">
+                        Open
+                    </span>
+
+                </div>
+
+                <div class="company-name">
+                    Infosys
+                </div>
+
+                <div class="role">
+                    Data Analyst
+                </div>
+
+                <div class="package">
+                    ₹9 LPA
+                </div>
+
+                <div class="details">
+
+                    <div class="detail">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        Pune
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-mortarboard-fill"></i>
+                        7.5 CGPA
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-briefcase-fill"></i>
+                        Full Time
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-bar-chart-fill"></i>
+                        Analytics
+                    </div>
+
+                </div>
+
+                <div class="deadline">
+                    <i class="bi bi-clock-fill"></i>
+                    Apply before 12 Oct 2026
+                </div>
+
+                <button class="apply-btn"
+                        onclick="apply(this,'Infosys','Data Analyst','₹9 LPA')">
+                    Apply Now
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- INNOVATEX -->
+
+        <div class="col-lg-4 col-md-6 drive-item"
+             data-search="innovatex ai ml intern bangalore ai internship"
+             data-role="ai intern">
+
+            <div class="drive-card">
+
+                <div class="company-row">
+
+                    <div class="company-logo"
+                         style="background:linear-gradient(135deg,#06d6a0,#4361ee)">
+                        IX
+                    </div>
+
+                    <span class="badge-open">
+                        Open
+                    </span>
+
+                </div>
+
+                <div class="company-name">
+                    Accenture
+                </div>
+
+                <div class="role">
+                    AI / ML Intern
+                </div>
+
+                <div class="package">
+                    ₹6 LPA
+                </div>
+
+                <div class="details">
+
+                    <div class="detail">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        Bangalore
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-mortarboard-fill"></i>
+                        7.0 CGPA
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-briefcase-fill"></i>
+                        Internship
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-robot"></i>
+                        AI / ML
+                    </div>
+
+                </div>
+
+                <div class="deadline">
+                    <i class="bi bi-clock-fill"></i>
+                    Apply before 15 Oct 2026
+                </div>
+
+                <button class="apply-btn"
+                        onclick="apply(this,'Accenture','AI / ML Intern','₹6 LPA')">
+                    Apply Now
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- CODECRAFT -->
+
+        <div class="col-lg-4 col-md-6 drive-item"
+             data-search="codecraft software developer pune developer"
+             data-role="developer">
+
+            <div class="drive-card">
+
+                <div class="company-row">
+
+                    <div class="company-logo"
+                         style="background:linear-gradient(135deg,#ff9f1c,#f72585)">
+                        CC
+                    </div>
+
+                    <span class="badge-open">
+                        Open
+                    </span>
+
+                </div>
+
+                <div class="company-name">
+                    Capgemini
+                </div>
+
+                <div class="role">
+                    Software Developer
+                </div>
+
+                <div class="package">
+                    ₹7.5 LPA
+                </div>
+
+                <div class="details">
+
+                    <div class="detail">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        Pune
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-mortarboard-fill"></i>
+                        6.5 CGPA
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-briefcase-fill"></i>
+                        Full Time
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-code-slash"></i>
+                        Java / Web
+                    </div>
+
+                </div>
+
+                <div class="deadline">
+                    <i class="bi bi-clock-fill"></i>
+                    Apply before 18 Oct 2026
+                </div>
+
+                <button class="apply-btn"
+                        onclick="apply(this,'Capgemini','Software Developer','₹7.5 LPA')">
+                    Apply Now
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- INFOWAVE -->
+
+        <div class="col-lg-4 col-md-6 drive-item"
+             data-search="infowave frontend developer mumbai developer"
+             data-role="developer">
+
+            <div class="drive-card">
+
+                <div class="company-row">
+
+                    <div class="company-logo"
+                         style="background:linear-gradient(135deg,#4cc9f0,#4361ee)">
+                        IW
+                    </div>
+
+                    <span class="badge-open">
+                        Open
+                    </span>
+
+                </div>
+
+                <div class="company-name">
+                    Wipro
+                </div>
+
+                <div class="role">
+                    Frontend Developer
+                </div>
+
+                <div class="package">
+                    ₹6.5 LPA
+                </div>
+
+                <div class="details">
+
+                    <div class="detail">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        Mumbai
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-mortarboard-fill"></i>
+                        6.5 CGPA
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-briefcase-fill"></i>
+                        Full Time
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-window"></i>
+                        Web
+                    </div>
+
+                </div>
+
+                <div class="deadline">
+                    <i class="bi bi-clock-fill"></i>
+                    Apply before 20 Oct 2026
+                </div>
+
+                <button class="apply-btn"
+                        onclick="apply(this,'Wipro','Frontend Developer','₹6.5 LPA')">
+                    Apply Now
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- CLOUDNEX -->
+
+        <div class="col-lg-4 col-md-6 drive-item"
+             data-search="cloudnex cloud intern mumbai internship"
+             data-role="intern">
+
+            <div class="drive-card">
+
+                <div class="company-row">
+
+                    <div class="company-logo"
+                         style="background:linear-gradient(135deg,#06d6a0,#7209b7)">
+                        CN
+                    </div>
+
+                    <span class="badge-open">
+                        Open
+                    </span>
+
+                </div>
+
+                <div class="company-name">
+                    Wipro
+                </div>
+
+                <div class="role">
+                    Cloud Engineering Intern
+                </div>
+
+                <div class="package">
+                    ₹5 LPA
+                </div>
+
+                <div class="details">
+
+                    <div class="detail">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        Mumbai
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-mortarboard-fill"></i>
+                        6.0 CGPA
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-briefcase-fill"></i>
+                        Internship
+                    </div>
+
+                    <div class="detail">
+                        <i class="bi bi-cloud-fill"></i>
+                        Cloud
+                    </div>
+
+                </div>
+
+                <div class="deadline">
+                    <i class="bi bi-clock-fill"></i>
+                    Apply before 22 Oct 2026
+                </div>
+
+                <button class="apply-btn"
+                        onclick="apply(this,'Wipro','Cloud Engineering Intern','₹5 LPA')">
+                    Apply Now
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- NO RESULTS -->
+
+    <div id="noResults">
+
+        <i class="bi bi-search"></i>
+
+        <h4>No placement drives found</h4>
+
+        <p>
+            Try changing your search or filter.
+        </p>
+
+    </div>
+
+</main>
+
+
+<script>
+function filterDrives() {
+    const search = document.getElementById("searchInput").value.toLowerCase();
+    const role = document.getElementById("roleFilter").value.toLowerCase();
+    const cards = document.querySelectorAll(".drive-item");
+    let visible = 0;
+    cards.forEach(card => {
+        const text = card.dataset.search.toLowerCase();
+        const cardRole = card.dataset.role.toLowerCase();
+        const ok = text.includes(search) && (role === "all" || cardRole.includes(role));
+        card.style.display = ok ? "" : "none";
+        if (ok) visible++;
+    });
+    document.getElementById("driveCount").innerText = visible;
+    document.getElementById("noResults").style.display = visible === 0 ? "block" : "none";
+}
+
+async function apply(button, company, role, packageValue) {
+    const session = getSession();
+    if (!session || session.userType !== 'student') {
+        alert('Please login as a student first.');
+        window.location.href = '../student-login.html';
+        return;
+    }
+    try {
+        const drives = await apiRequest('/drives/active');
+        const drive = drives.find(d => d.company === company && d.role === role);
+        if (!drive) throw new Error('This placement drive is not available in the database.');
+        const application = await apiRequest('/applications', {
+            method: 'POST',
+            body: JSON.stringify({studentId: session.id, driveId: drive.id})
+        });
+        const localApps = JSON.parse(localStorage.getItem('applications') || '[]');
+        localApps.push({id: application.id, company: application.company, role: application.role, package: application.package, date: application.date, status: application.status});
+        localStorage.setItem('applications', JSON.stringify(localApps));
+        button.innerHTML = '<i class="bi bi-check-circle-fill"></i> Applied';
+        button.classList.add('applied');
+        button.disabled = true;
+        alert('Application submitted successfully!\n\n' + company + ' - ' + role);
+    } catch (err) { alert(err.message); }
+}
+
+async function markExistingApplications() {
+    const session = getSession();
+    if (!session || session.userType !== 'student') return;
+    try {
+        const apps = await apiRequest('/applications/student/' + session.id);
+        document.querySelectorAll('.apply-btn').forEach(button => {
+            const onclick = button.getAttribute('onclick') || '';
+            const match = onclick.match(/apply\(this,'([^']+)','([^']+)'/);
+            if (!match) return;
+            if (apps.some(a => a.company === match[1] && a.role === match[2])) {
+                button.innerHTML = '<i class="bi bi-check-circle-fill"></i> Applied';
+                button.classList.add('applied'); button.disabled = true;
+            }
+        });
+    } catch (e) { console.warn('Backend sync unavailable:', e.message); }
+}
+
+function logout() { clearSession(); }
+
+markExistingApplications();
+</script>
+
+</body>
+</html>
